@@ -73,7 +73,10 @@ describe('mongo update',function() {
 
           // The others are modified
           d.slice(1).forEach(function(d) {
-            assert.deepEqual(d,{ok:1,n:1,upserted:[]});
+            if (d.nModified !== undefined)
+              assert.deepEqual(d,{ok:1,nModified:1,n:1});
+            else
+              assert.deepEqual(d,{ok:1,n:1});
           });  
         });
     });

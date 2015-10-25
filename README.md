@@ -70,7 +70,8 @@ Throughout the etl pipeline new packets are generated with incoming packets as p
 Example:
 
 ```js
-// In this example the `obj` would only show property `c` in stringify unless expanded first
+// In this example the `obj` would only show property `c` in stringify
+// unless expanded first
 var base = {a:1,b:'test'},
     obj = Object.create(base),
     s = etl.streamz();

@@ -103,6 +103,25 @@ s.pipe(etl.expand())
 
 The optional `convert` option will modify the keys of the new object.  If `convert` is `'uppercase'` or `'lowercase'` the case of the keys will be adjusted accordingly.  If `convert` is a function it will set the keyname to the function output (and if output is `undefined` that particular key will not be included in the new object)
 
+### `etl.map(fn)`
+The base [`streamz`](http://github.com/ZJONSSON/streamz) object is exposed as `etl.map` to provide quick ability to do mappings on the fly.  Anything `pushed` inside the custom function will go downstream.  Also if the function has a return value (or a promise with a return value) that is `!== undefined` that return value will be pushed as well.
+
+Example
+
+```js
+// In this example names and ages and normalized to fresh objects pushed
+// downstream.  (If we wanted to retain metadata we would use Object.create(d))
+
+etl.file('test.csv')
+  .pipe(etl.csv())
+  .pipe(etl.map(function(d) {
+    this.push({name: d.name_1, age: d.age_1});
+    this.push({name: d.name_2, age: d.age_2});
+    this.push({name: d.name_3, age: d.age_3});
+  }))
+```
+
+
 ### `etl.stringify([indent],[replacer])`
 Transforms incoming packets into JSON stringified versions, with optional `indent` and `replacer`
 

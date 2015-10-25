@@ -9,6 +9,6 @@ module.exports = {
   expand : require('./lib/expand'),
   stringify : require('./lib/stringify'),
   inspect : require('./lib/inspect'),
-  map : require('./lib/map'),
+  map : streamz,
   streamz : streamz
 };

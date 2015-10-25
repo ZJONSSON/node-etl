@@ -7,6 +7,7 @@ module.exports = {
   split : require('./lib/split'),
   expand : require('./lib/expand'),
   stringify : require('./lib/stringify'),
+  inspect : require('./lib/inspect'),
   map : require('./lib/map'),
   streamz : streamz
 };

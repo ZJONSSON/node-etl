@@ -5,8 +5,8 @@ var etl = require('../index'),
     mongo = require('./lib/mongo');
 
 
-describe('mongo',function() {
-  it('insert piped data into mongo',function() {
+describe('mongo.insert',function() {
+  it('pipes data into mongo',function() {
     return mongo.getCollection('insert')
       .then(function(collection) {
         var insert = etl.mongo.insert(collection,{pushResult:true});
@@ -30,10 +30,10 @@ describe('mongo',function() {
       });
   });
 
-  it('pushResults == false pushes nothing downstream',function() {
+  it('pushResults == false and collection as promise',function() {
     return mongo.getCollection('insert')
       .then(function(collection) {
-        var insert = etl.mongo.insert(collection);
+        var insert = etl.mongo.insert(Promise.resolve(collection));
         data.stream().pipe(insert);
         return inspect(insert);
       })

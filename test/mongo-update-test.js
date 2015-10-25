@@ -24,7 +24,7 @@ describe('mongo update',function() {
     });
   });
 
-  it('pushResults == false pushes nothing downstream',function() {
+  it('pushResults == false and collection as promise',function() {
     return mongo.getCollection('update-empty')
       .then(function(collection) {
         var update = etl.mongo.update(collection,['name']);

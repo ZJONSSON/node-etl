@@ -6,7 +6,7 @@
   "author": "Ziggy Jonsson (http://github.com/zjonsson/)",
   "repository": {
     "type": "git",
-    "url": "http://github.com/ZJONSSON/streamz"
+    "url": "http://github.com/ZJONSSON/etl"
   },
   "scripts": {
     "test": "mocha"

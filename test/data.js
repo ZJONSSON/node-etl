@@ -1,6 +1,6 @@
 var PassThrough = require('stream').PassThrough;
 
-module.exports = {
+var data = {
   data : [
     { text: 'Nathaniel Olson 52    1/10/2025',
       name: 'Nathaniel Olson',
@@ -24,22 +24,7 @@ module.exports = {
       __filename: 'test.txt'
     }
   ],
-  getData : function(clone) {
-    var s = PassThrough({objectMode:true}),
-        data = this.data;
 
-    data.forEach(function(d,i) {
-      setTimeout(function() {
-        s.write(clone ? Object.create(d) : d);
-        if (i == data.length-1)
-          s.end();
-      },i*10);
-    });
-    return s;
-  },
-  getCloneData : function() {
-    return this.getData(true);
-  },
   fixed: ['Nathaniel O','lson 52    1/10/202','5Ann Ellis       36  ','  10/2/203','5Willie F','reeman  38     4/1/20','16'],
   layout : { 
     name : 16,
@@ -47,3 +32,33 @@ module.exports = {
     dt : { length : 12, transform: function(d) { return new Date(d); } }
   }
 };
+
+data.copy = function() {
+  return this.data.map(function(d) {
+    return Object.keys(d).reduce(function(p,key) {
+      p[key] = d[key];
+      return p;
+    },{});
+  });
+};
+
+data.stream = function(options) {
+  var s = PassThrough({objectMode:true}),
+      data = this.copy();
+
+  data.forEach(function(d,i) {
+    setTimeout(function() {
+      s.write(options && options.clone ? Object.create(d) : d);
+      if (i == data.length-1)
+        s.end();
+    },i*10);
+  });
+  return s;
+};
+
+
+for (var key in data.data) 
+  Object.freeze(data.data[key]);
+
+
+module.exports = data;

@@ -24,7 +24,7 @@ before(function() {
 describe('mongo insert',function() {
   it('pipes data into mongo',function() {
     var mongo = etl.mongo.insert(collection);
-    data.getData().pipe(mongo);
+    data.stream().pipe(mongo);
     return inspect(mongo);
   });
 
@@ -35,6 +35,7 @@ describe('mongo insert',function() {
         
         d.forEach(function(d) {
           d.dt = new Date(d.dt);
+          delete d._id;
         });
 
         assert.deepEqual(d,data.data);

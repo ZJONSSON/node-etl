@@ -23,13 +23,10 @@ describe('file',function() {
   it('can be piped',function() {
     var file= etl.file(path.join(__dirname,'test.txt'),{info:{category:'A'}});
 
-    var expected = data.data.map(function(d) {
-      var obj = {};
-      for (var key in d)
-        obj[key] = d[key];
-      obj.__path = undefined;
-      obj.category = 'A'
-      return obj;
+    var expected = data.copy().map(function(d) {
+      d.__path = undefined;
+      d.category = 'A';
+      return d;
     });
 
     inspect(file.pipe(etl.fixed(data.layout)).pipe(etl.expand()))

@@ -5,7 +5,7 @@ var etl = require('../index'),
 
 var data = [{a:1,b:'test1'},{a:2,b:'test2'}];
 
-function getData() {
+function dataStream() {
   var s = etl.streamz();
   data.forEach(s.write.bind(s));
   s.end();
@@ -16,7 +16,7 @@ describe('stringify',function() {
   it('pushes stringified object',function() {
     var stringify = etl.stringify();
 
-    getData().pipe(stringify);
+    dataStream().pipe(stringify);
 
     var expected = [ '{"a":1,"b":"test1"}', '{"a":2,"b":"test2"}' ];
 
@@ -29,7 +29,7 @@ describe('stringify',function() {
   it('provides optional indent',function() {
     var stringify = etl.stringify(2);
 
-    getData().pipe(stringify);
+    dataStream().pipe(stringify);
 
     var expected = [ '{\n  "a": 1,\n  "b": "test1"\n}', '{\n  "a": 2,\n  "b": "test2"\n}' ];
 

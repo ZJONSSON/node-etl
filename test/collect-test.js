@@ -5,7 +5,7 @@ var etl = require('../index'),
 
 var data = [1,2,3,4,5,6,7,8,9,10,11];
 
-function getData() {
+function dataStream() {
   var s = PassThrough({objectMode:true});
   data.forEach(function(d,i) {
     setTimeout(function() {
@@ -30,7 +30,7 @@ describe('collect',function() {
 
       var collect = etl.collect(3);
 
-      getData().pipe(collect);
+      dataStream().pipe(collect);
     
       return inspect(collect)
         .then(function(d) {
@@ -45,7 +45,7 @@ describe('collect',function() {
 
       var collect = etl.collect(9999);
 
-      getData().pipe(collect);
+      dataStream().pipe(collect);
 
       return inspect(collect)
         .then(function(d) {
@@ -62,7 +62,7 @@ describe('collect',function() {
 
       var collect = etl.collect(1);
 
-      getData().pipe(collect);
+      dataStream().pipe(collect);
 
       return inspect(collect)
         .then(function(d) {

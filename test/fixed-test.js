@@ -7,7 +7,7 @@ describe('fixed layout',function() {
   it('splits incoming data into columns',function() {
     var fixed = etl.fixed(data.layout);
 
-    data.getData().pipe(fixed);
+    data.stream().pipe(fixed);
     
     return inspect(fixed.pipe(etl.expand()))
       .then(function(d) {

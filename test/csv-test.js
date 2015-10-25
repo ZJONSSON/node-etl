@@ -11,19 +11,15 @@ describe('csv_parser',function() {
     etl.file(path.join(__dirname,'test.csv')).pipe(csv);
 
     // Adjust expected values to the csv
-    var expected = data.data.map(function(d) {
-      var obj = {};
-      for (var key in d)
-        obj[key] = d[key];
-
-      obj.__line = obj.__line +1;
-      obj.__filename = 'test.csv';
+    var expected = data.copy().map(function(d) {
+      d.__line = d.__line +1;
+      d.__filename = 'test.csv';
 
       // Clear out __path and text as they are volatile
-      obj.__path = undefined;
-      obj.text = undefined;
+      d.__path = undefined;
+      d.text = undefined;
       
-      return obj;
+      return d;
     });
 
     

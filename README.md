@@ -1,4 +1,8 @@
-ETL is a collection of stream based components that can be piped together to form a complete ETL pipeline.
+ETL is a collection of stream based components that can be piped together to form a complete ETL pipeline with buffering, bulk-inserts and concurrent database streams.
+
+```
+npm install etl
+```
 
 
 ### `etl.file(path,[options])`

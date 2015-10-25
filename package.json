@@ -1,12 +1,12 @@
 {
   "name": "etl",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "Collection of stream-based components that form an ETL pipeline",
   "main": "index.js",
   "author": "Ziggy Jonsson (http://github.com/zjonsson/)",
   "repository": {
     "type": "git",
-    "url": "http://github.com/ZJONSSON/etl"
+    "url": "http://github.com/ZJONSSON/node-etl"
   },
   "scripts": {
     "test": "mocha"

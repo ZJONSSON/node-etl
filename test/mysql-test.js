@@ -15,10 +15,10 @@ var pool = mysql.createPool({
 var p = etl.mysql.execute(pool);
 
 before(function() {
-  return p.query('DROP TABLE IF EXISTS circle_user.test;')
+  return p.query('DROP TABLE IF EXISTS circle_test.test;')
     .then(function() {
       return p.query(
-        'CREATE TABLE circle_user.test ('+
+        'CREATE TABLE circle_test.test ('+
         'name varchar(45) DEFAULT NULL,'+
         'age int(11) DEFAULT NULL,'+
         'dt datetime DEFAULT NULL '+
@@ -30,7 +30,7 @@ before(function() {
 describe('mysql',function() {
   it('inserts',function() {
 
-    var script = etl.mysql.script(pool,'circle_user','test'),
+    var script = etl.mysql.script(pool,'circle_test','test'),
         execute = etl.mysql.execute(pool,{pushResult:true});
     
     data.stream()
@@ -44,7 +44,7 @@ describe('mysql',function() {
   });
 
   it('and records are verified',function() {
-    return p.query('SELECT * from circle_user.test')
+    return p.query('SELECT * from circle_test.test')
       .then(function(d) {
         assert.deepEqual(d[0],data.data.map(function(d) {
           return {
@@ -58,7 +58,7 @@ describe('mysql',function() {
   });
 
   it('streaming works',function() {
-    var stream = p.stream('select * from circle_user.test');
+    var stream = p.stream('select * from circle_test.test');
     return inspect(stream)
       .then(function(d) {
         assert.equal(d.length,3);

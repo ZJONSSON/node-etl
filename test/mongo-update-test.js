@@ -18,7 +18,10 @@ describe('mongo update',function() {
         })
         .then(function(d) {
           d.forEach(function(d) {
-            assert.deepEqual(d,{ok:1,nModified:0,n:0});
+            if (d.nModified !== undefined)
+              assert.deepEqual(d,{ok:1,nModified:0,n:0});
+            else
+              assert.deepEqual(d,{ok:1,n:0,upserted:[]});
           });
         });
     });
@@ -62,11 +65,15 @@ describe('mongo update',function() {
         })
         .then(function(d) {
           // The first one wasn't found
-          assert.deepEqual(d[0],{ok:1,nModified:0,n:0});
+          if (d[0].nModified !== undefined)
+            assert.deepEqual(d[0],{ok:1,nModified:0,n:0});
+          else
+            assert.deepEqual(d[0],{ok:1,n:0,upserted:[]});
+
 
           // The others are modified
           d.slice(1).forEach(function(d) {
-            assert.deepEqual(d,{ok:1,nModified:1,n:1});
+            assert.deepEqual(d,{ok:1,n:1,upserted:[]});
           });  
         });
     });
@@ -100,7 +107,10 @@ describe('mongo update',function() {
         })
         .then(function(d) {
           d.forEach(function(d) {
-            assert.deepEqual(d,{ok:1,nModified:0,n:1,upserted:d.upserted});
+            if (d.nModified !== undefined)
+              assert.deepEqual(d,{ok:1,nModified:0,n:1,upserted:d.upserted});
+            else
+              assert.deepEqual(d,{ok:1,n:1,upserted:d.upserted});
           });
        });
     });

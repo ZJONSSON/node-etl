@@ -48,6 +48,24 @@ etl.file('test.txt')
   .pipe(etl.fixed(layout))
 ```
 
+### `etl.csv_parser([options])`
+Parses incoming csv text into individual records.  For parsing options see [csv-parser](https://www.npmjs.com/package/csv-parser).  If  `options` contains a `transform` object containing functions, those functions will be applied on the values of any matching keys in the data.  If a key in the `transform` object is set to `null` then value with that key will not be included in the downstream packets.
+
+Example
+
+```js
+// Here the test.csv is parsed but field dt is converted to date.  Each packet will 
+// contain the following properties:  __filename, __path, __line and csv fields
+etl.file('test.csv')
+  .pipe(etl.csv({
+    transform: {
+      dt : function(d) {
+        return new Date(d);
+      }
+    }
+  });
+```
+
 ### `etl.collect(count)`
 Buffers incoming packets until they reach a specified count and then sends the array of the buffered packets downstream. At the end of the incoming stream, any buffered items are shipped off even though the count has not been achieved.   This functionality can come in handy when preparing to bulk-insert into databases.
 

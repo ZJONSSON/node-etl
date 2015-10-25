@@ -29,4 +29,17 @@ describe('mongo',function() {
         assert.deepEqual(d,data.data);
       });
   });
+
+  it('pushResults == false pushes nothing downstream',function() {
+    return mongo.getCollection('insert')
+      .then(function(collection) {
+        var insert = etl.mongo.insert(collection);
+        data.stream().pipe(insert);
+        return inspect(insert);
+      })
+      .then(function(d) {
+        assert.deepEqual(d,[]);
+      });
+  });
+
 });

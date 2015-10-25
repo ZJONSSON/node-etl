@@ -14,14 +14,31 @@ describe('mongo update',function() {
           data.stream()
             .pipe(update);
 
-          return inspect(update).then(function(d) {
-            d.forEach(function(d) {
-              assert.deepEqual(d,{ok:1,nModified:0,n:0});
-            });
+          return inspect(update);
+        })
+        .then(function(d) {
+          d.forEach(function(d) {
+            assert.deepEqual(d,{ok:1,nModified:0,n:0});
           });
         });
     });
   });
+
+  it('pushResults == false pushes nothing downstream',function() {
+    return mongo.getCollection('update-empty')
+      .then(function(collection) {
+        var update = etl.mongo.update(collection,['name']);
+
+        data.stream()
+          .pipe(update);
+
+        return inspect(update);
+      })
+      .then(function(d) {
+        assert.deepEqual(d,[]);
+      });
+  });
+          
 
   describe('on a populated collection',function() {
     it('should update matches',function() {

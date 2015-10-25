@@ -157,6 +157,26 @@ etl.file('test.csv')
 
 ```
 
+### `etl.mysql.script(pool,schema,table,[options])`
+Collects data and builds up a mysql statement to insert/update data until the buffer is more than `maxBuffer` (customizable in options).  Then the maxBuffer is reached, a full sql statement is pushed downstream.   When the input stream has ended, any remaining sql statement buffer will be flushed as well.
+
+The script stream first establishes the column names of the table being updated, and as data comes in - it uses only the properties that match column names in the table.
+
+### `etl.mysql.execute(pool,[concurrency],[options])`
+This component executes any incoming packets as sql statements using connections from the connection pool.  Maximum concurrency can be selected optionally (default is 1 connection at a time).
+
+Example:
+
+```js
+// The following bulks data from the csv into sql statements and executes them with 
+// a maximum of 4 concurrent connections
+
+etl.file('test.csv')
+  .pipe(etl.csv())
+  .pipe(etl.mysql.script(pool,'testschema','testtable'))
+  .pipe(etl.mysql.execute(pool,4))
+```
+
 
 ### `etl.stringify([indent],[replacer])`
 Transforms incoming packets into JSON stringified versions, with optional `indent` and `replacer`

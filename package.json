@@ -1,12 +1,16 @@
 {
   "name": "etl",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.0.2",
+  "description": "Collection of stream-based components that form an ETL pipeline",
   "main": "index.js",
+  "author": "Ziggy Jonsson (http://github.com/zjonsson/)",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/ZJONSSON/streamz"
+  },
   "scripts": {
     "test": "mocha"
   },
-  "author": "",
   "license": "MIT",
   "dependencies": {
     "streamz": "^1.1.0"

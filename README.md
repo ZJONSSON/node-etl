@@ -121,6 +121,42 @@ etl.file('test.csv')
   }))
 ```
 
+### `etl.mongo.insert(collection,[options])`
+Inserts incoming data into the provided mongodb collection.  The supplied collection can be a promise on a collection.  The options are passed on to both streamz and the mongodb insert comand.  By default this object doesn't push anything downstream, but it `pushResults` is set as `true` in options, the results from mongo will be pushed downstream.
+
+Example
+
+```js
+// The following inserts data from a csv, 10 records at a time into a mongo collection
+// ..assuming mongo has been promisified
+
+var db = mongo.ConnectAsync('mongodb://localhost:27017');
+var collection = db.then(function(db) {
+  return db.collection('testcollection');
+});
+
+etl.file('test.csv')
+  .pipe(etl.csv())
+  .pipe(etl.collect(10))
+  .pipe(mongo.insert(collection));
+
+```
+
+
+### `etl.mongo.update(collection,keys,[options])`
+Updates incoming data by building a `criteria` from an array of `keys` and the incoming data.   Supplied collection can be a promise and results can be pushed downstream by declaring `pushResults : true`.   The options are passed to mongo so defining `upsert : true` in options will ensure an upsert of the data.
+
+Example
+
+```js
+// The following updates incoming persons using the personId as a criteria
+
+etl.file('test.csv')
+  .pipe(etl.csv())
+  .pipe(mongo.update(collection,['personId']));
+
+```
+
 
 ### `etl.stringify([indent],[replacer])`
 Transforms incoming packets into JSON stringified versions, with optional `indent` and `replacer`

@@ -2,6 +2,7 @@ var etl = require('../index'),
     inspect = require('./lib/inspect'),
     assert = require('assert'),
     data = require('./data'),
+    Promise = require('bluebird'),
     elasticsearch = require('elasticsearch');
 
 var client = new elasticsearch.Client({
@@ -21,7 +22,7 @@ describe('elastic bulk insert',function() {
 
   it('pipes data into elasticsearch',function() {
     var i = 0;
-    var upsert = etl.elastic.upsert(client,'test','test',{pushResult:true});
+    var upsert = etl.elastic.index(client,'test','test',{pushResult:true});
     data.stream()
       .pipe(etl.map(function(d) {
         d._id = i++;
@@ -40,11 +41,14 @@ describe('elastic bulk insert',function() {
   });
 
   it('retrieves data back from elasticsearch',function() {
-    return client.search({index:'test',type:'test'})
-      .then(function(d) {
-        var values = convertHits(d.hits.hits);
-        assert.deepEqual(values,data.data);
-      });
+    this.timeout(3000);
+    return Promise.delay(2000).then(function() {
+      return client.search({index:'test',type:'test'});
+    })
+    .then(function(d) {
+      var values = convertHits(d.hits.hits);
+      assert.deepEqual(values,data.data);
+    });
   });
 
   it('streams results with elastic.find',function() {

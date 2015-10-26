@@ -10,7 +10,8 @@ var client = new elasticsearch.Client({
     });
 
 before(function() {
-  return client.indices.delete({index:'test'});
+  return client.indices.delete({index:'test'})
+    .catch(Object);
 });
 
 

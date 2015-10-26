@@ -9,6 +9,10 @@ var client = new elasticsearch.Client({
       host: 'localhost:9200'
     });
 
+before(function() {
+  return client.indices.delete({index:'test'});
+});
+
 
 describe('elastic bulk insert',function() {
 

@@ -181,6 +181,26 @@ etl.file('test.csv')
   .pipe(etl.mysql.execute(pool,4))
 ```
 
+### `etl.elastic.bulk(action,client,index,type,[options])`
+Transmit incoming packets to elasticsearch, setting the appropriate meta-data depending on the default action. Each incoming packet can be an array of documents (or a single document).  Each document should contain a unique `_id`.   To bulk documents together use `etl.collect(num)` above the elastic adapter.
+
+The results are not pushed downstream unless `pushResults` is defined in the options.  Maximum number of concurrent connections can be defined as option `concurrency`.
+
+Available actions are also provided as separate api commands:
+
+* `etl.elastic.index(client,index,type,[options])`
+* `etl.elastic.update(client,index,type,[options])`
+* `etl.elastic.upsert(client,index,type,[options])`
+* `etl.elastic.delete(client,index,type,[options])`
+
+Example
+
+```js
+etl.file('test.csv')
+  .pipe(etl.csv())
+  .pipe(etl.collect(100))
+  .pipe(etl.elastic.index(esClient,'testindex','testtype'))
+```
 
 ### `etl.stringify([indent],[replacer])`
 Transforms incoming packets into JSON stringified versions, with optional `indent` and `replacer`

@@ -166,8 +166,8 @@ Collects data and builds up a mysql statement to insert/update data until the bu
 
 The script stream first establishes the column names of the table being updated, and as data comes in - it uses only the properties that match column names in the table.
 
-### `etl.mysql.execute(pool,[concurrency],[options])`
-This component executes any incoming packets as sql statements using connections from the connection pool.  Maximum concurrency can be selected optionally (default is 1 connection at a time).
+### `etl.mysql.execute(pool,[options])`
+This component executes any incoming packets as sql statements using connections from the connection pool. The maximum concurrency is automatically determined by the mysql poolSize, using the combination of callbacks and Promises.
 
 Example:
 

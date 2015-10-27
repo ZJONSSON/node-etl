@@ -31,13 +31,15 @@ describe('mysql',function() {
   it('inserts',function() {
 
     var script = etl.mysql.script(pool,'circle_test','test'),
-        execute = etl.mysql.execute(pool,{pushResult:true});
+        execute = etl.mysql.execute(pool,{pushResult:true}),
+        end = etl.map();
     
     data.stream()
       .pipe(script)
-      .pipe(execute);
+      .pipe(execute)
+      .pipe(end);
       
-    return inspect(execute)
+    return inspect(end)
       .then(function(d) {
         assert.equal(d[0].affectedRows,3);
       });

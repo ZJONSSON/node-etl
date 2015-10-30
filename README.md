@@ -195,6 +195,7 @@ Available actions are also provided as separate api commands:
 * `etl.elastic.update(client,index,type,[options])`
 * `etl.elastic.upsert(client,index,type,[options])`
 * `etl.elastic.delete(client,index,type,[options])`
+* `etl.elastic.custom(client,index,type,[options])`
 
 Example
 
@@ -204,6 +205,8 @@ etl.file('test.csv')
   .pipe(etl.collect(100))
   .pipe(etl.elastic.index(esClient,'testindex','testtype'))
 ```
+
+If `custom` action is selected, each packet must be the raw metadata to be sent to elasticsearch with the optional second line stored in property `body`
 
 ### `etl.stringify([indent],[replacer])`
 Transforms incoming packets into JSON stringified versions, with optional `indent` and `replacer`

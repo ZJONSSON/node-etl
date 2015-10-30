@@ -29,7 +29,7 @@ etl.file('text.txt')
 ```
 
 ### `etl.fixed(layout)`
-Parses incoming text into objects using a fixed width layout.   The layout should be an object where each key is a field name that should be parsed, containing an object with `start`, `end` and/or `length`.  Alternatively each key can just have a number, which will be deemed to be `length`.   If a key contains a `transform` function, it will be applied to the parsed value of that key.
+Parses incoming text into objects using a fixed width layout.   The layout should be an object where each key is a field name that should be parsed, containing an object with `start`, `end` and/or `length`.  Alternatively each key can just have a number, which will be deemed to be `length`.   If a key contains a `transform` function, it will be applied to the parsed value of that key.  The layout can also be supplied as an array where instead of an object key the fieldname is defined using property `field` in each element.
 
 The length of a single record will be determined by the highest `end` or `start+length` position.
 
@@ -51,6 +51,9 @@ var layout = {
 etl.file('test.txt')
   .pipe(etl.fixed(layout))
 ```
+
+### `etl.cut(maxLength)`
+Cuts incoming text into text snippets of a given maximum length and pushes downstream.
 
 ### `etl.csv_parser([options])`
 Parses incoming csv text into individual records.  For parsing options see [csv-parser](https://www.npmjs.com/package/csv-parser).  If  `options` contains a `transform` object containing functions, those functions will be applied on the values of any matching keys in the data.  If a key in the `transform` object is set to `null` then value with that key will not be included in the downstream packets.
@@ -192,6 +195,7 @@ Available actions are also provided as separate api commands:
 * `etl.elastic.update(client,index,type,[options])`
 * `etl.elastic.upsert(client,index,type,[options])`
 * `etl.elastic.delete(client,index,type,[options])`
+* `etl.elastic.custom(client,index,type,[options])`
 
 Example
 
@@ -201,6 +205,8 @@ etl.file('test.csv')
   .pipe(etl.collect(100))
   .pipe(etl.elastic.index(esClient,'testindex','testtype'))
 ```
+
+If `custom` action is selected, each packet must be the raw metadata to be sent to elasticsearch with the optional second line stored in property `body`
 
 ### `etl.stringify([indent],[replacer])`
 Transforms incoming packets into JSON stringified versions, with optional `indent` and `replacer`

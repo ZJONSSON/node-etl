@@ -213,3 +213,12 @@ Transforms incoming packets into JSON stringified versions, with optional `inden
 
 ### `etl.inspect([options])`
 Logs incoming packets to console using `util.inspect` (with optional custom options)
+
+### `etl.cluster.schedule(list,[num_threads],[reportingInterval])` (run from master)
+Schedules a list (array) of tasks to be performed by workers.  Returns a promise on the completion of all the tasks.   Number of threads will default to number of cpus.  If reporting interval is defined - progress will be reported in console.log.
+
+### `etl.cluster.process(data,callback)`
+This function should be overwritten in the worker to perform each task and call the callback then done.
+
+### `etl.cluster.progress(num)`
+This function sends a numerical value representing progress up to the master (for reporting).  

@@ -156,10 +156,11 @@ Updates incoming data by building a `criteria` from an array of `keys` and the i
 Example
 
 ```js
-// The following updates incoming persons using the personId as a criteria
+// The following updates incoming persons using the personId as a criteria (100 records at a time)
 
 etl.file('test.csv')
   .pipe(etl.csv())
+  .pipe(etl.collect(100))
   .pipe(mongo.update(collection,['personId']));
 
 ```

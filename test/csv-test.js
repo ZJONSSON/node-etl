@@ -6,8 +6,7 @@ var etl = require('../index'),
 
 describe('csv_parser',function() {
   it('parses (and transforms) incoming data',function() {
-    var csv = etl.csv_parser({transform:{dt:function(d) { return new Date(d);}}});
-
+    var csv = etl.csv_parser({sanitize: true, transform:{dt:function(d) { return new Date(d);}}});
     etl.file(path.join(__dirname,'test.csv')).pipe(csv);
 
     // Adjust expected values to the csv

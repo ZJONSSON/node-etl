@@ -1,5 +1,4 @@
 var etl = require('../index'),
-    inspect = require('./lib/inspect'),
     assert = require('assert');
 
 var data = [
@@ -28,7 +27,8 @@ describe('cut',function() {
       });
     });
 
-    return inspect(cut.pipe(etl.expand()))
+    return cut.pipe(etl.expand())
+      .promise()
       .then(function(d) {
         assert.deepEqual(d[0],expected[0]);
       });

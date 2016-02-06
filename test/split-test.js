@@ -1,5 +1,4 @@
 var etl = require('../index'),
-    inspect = require('./lib/inspect'),
     assert = require('assert');
 
 var data = [
@@ -30,7 +29,8 @@ describe('split',function() {
       });
     });
 
-    return inspect(split.pipe(etl.expand()))
+    return split.pipe(etl.expand())
+      .promise()
       .then(function(d) {
         assert.deepEqual(d,expected);
       });
@@ -54,7 +54,8 @@ describe('split',function() {
       });
     });
 
-    return inspect(split.pipe(etl.expand()))
+    return split.pipe(etl.expand())
+      .promise()
       .then(function(d) {
         assert.deepEqual(d,expected);
       });

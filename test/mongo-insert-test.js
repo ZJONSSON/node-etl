@@ -1,5 +1,4 @@
 var etl = require('../index'),
-    inspect = require('./lib/inspect'),
     assert = require('assert'),
     data = require('./data'),
     mongo = require('./lib/mongo');
@@ -10,8 +9,9 @@ describe('mongo.insert',function() {
     return mongo.getCollection('insert')
       .then(function(collection) {
         var insert = etl.mongo.insert(collection,{pushResult:true});
-        data.stream().pipe(insert);
-        return inspect(insert);
+        return data.stream()
+          .pipe(insert)
+          .promise();
       })
       .then(function(d) {
         d.forEach(function(d) {
@@ -34,8 +34,9 @@ describe('mongo.insert',function() {
     return mongo.getCollection('insert')
       .then(function(collection) {
         var insert = etl.mongo.insert(Promise.resolve(collection));
-        data.stream().pipe(insert);
-        return inspect(insert);
+        return data.stream()
+          .pipe(insert)
+          .promise();
       })
       .then(function(d) {
         assert.deepEqual(d,[]);

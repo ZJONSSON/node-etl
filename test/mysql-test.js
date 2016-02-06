@@ -3,7 +3,6 @@
 var etl = require('../index'),
     mysql = require('mysql'),
     data = require('./data'),
-    inspect = require('./lib/inspect'),
     assert = require('assert');
 
 var pool = mysql.createPool({
@@ -34,12 +33,11 @@ describe('mysql',function() {
         execute = etl.mysql.execute(pool,{pushResult:true}),
         end = etl.map();
     
-    data.stream()
+    return data.stream()
       .pipe(script)
       .pipe(execute)
-      .pipe(end);
-      
-    return inspect(end)
+      .pipe(end)
+      .promise()
       .then(function(d) {
         assert.equal(d[0].affectedRows,3);
       });
@@ -55,13 +53,12 @@ describe('mysql',function() {
             dt : d.dt
           };
         }));
-        
       });
   });
 
   it('streaming works',function() {
-    var stream = p.stream('select * from circle_test.test');
-    return inspect(stream)
+    return p.stream('select * from circle_test.test')
+      .promise()
       .then(function(d) {
         assert.equal(d.length,3);
       });

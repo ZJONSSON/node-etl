@@ -1,5 +1,4 @@
 var etl = require('../index'),
-    inspect = require('./lib/inspect'),
     assert = require('assert'),
     data = require('./data'),
     Promise = require('bluebird'),
@@ -28,19 +27,19 @@ describe('elastic bulk insert',function() {
   it('pipes data into elasticsearch',function() {
     var i = 0;
     var upsert = etl.elastic.index(client,'test','test',{pushResult:true});
-    data.stream()
+
+    return data.stream()
       .pipe(etl.map(function(d) {
         d._id = i++;
         return d;
       }))
-      
       .pipe(etl.collect(100))
       .pipe(upsert)
-      .on('error',console.log);
-
-    return inspect(upsert).then(function(d) {
-      assert.equal(d[0].items.length,3);
-    });
+      .on('error',console.log)
+      .promise()
+      .then(function(d) {
+        assert.equal(d[0].items.length,3);
+      });
   });
 
   it('retrieves data back from elasticsearch',function() {
@@ -58,10 +57,11 @@ describe('elastic bulk insert',function() {
     var find = etl.elastic.find(client);
     find.end({index:'test','type':'test'});
 
-    return inspect(find).then(function(d) {
-      var values = convertHits(d);
-      assert.deepEqual(values,data.data);
-    });
+    return find.promise()
+      .then(function(d) {
+        var values = convertHits(d);
+        assert.deepEqual(values,data.data);
+      });
   });
 
 

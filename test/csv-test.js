@@ -1,5 +1,4 @@
 var etl = require('../index'),
-    inspect = require('./lib/inspect'),
     assert = require('assert'),
     path = require('path'),
     data = require('./data');
@@ -22,7 +21,8 @@ describe('csv_parser',function() {
     });
 
     
-    return inspect(csv.pipe(etl.expand()))
+    return csv.pipe(etl.expand())
+      .promise()
       .then(function(d) {
 
         // Clear out __path and text as they are volatile

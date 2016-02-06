@@ -225,3 +225,18 @@ This function should be overwritten in the worker to perform each task and call 
 
 ### `etl.cluster.progress(num)`
 This function sends a numerical value representing progress up to the master (for reporting).  
+
+### `etl.chain(fn)`
+Allows a custom subchain of streams to be injected into the pipe using duplexer2. You must provide a custom function that returns the outbound stream, after receiving the inbound stream as the first function argument.
+
+Example:
+
+```js
+etl.file('test.csv')
+  .pipe(function(inbound) {
+    return inbound
+      .pipe(etl.csv())
+      .pipe(etl.collect(100));
+  })
+  .pipe(console.log);
+```

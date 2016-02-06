@@ -1,5 +1,4 @@
 var etl = require('../index'),
-    inspect = require('./lib/inspect'),
     PassThrough = require('stream').PassThrough,
     assert = require('assert');
 
@@ -28,11 +27,9 @@ describe('collect',function() {
         [10,11]
       ];
 
-      var collect = etl.collect(3);
-
-      dataStream().pipe(collect);
-    
-      return inspect(collect)
+      return dataStream()
+        .pipe(etl.collect(3))
+        .promise()
         .then(function(d) {
           assert.deepEqual(d,expected);
         });
@@ -43,11 +40,9 @@ describe('collect',function() {
     it('returns everything in an array',function() {
       var expected = [data];
 
-      var collect = etl.collect(9999);
-
-      dataStream().pipe(collect);
-
-      return inspect(collect)
+      return dataStream()
+        .pipe(etl.collect(9999))
+        .promise()
         .then(function(d) {
           assert.deepEqual(d,expected);
         });
@@ -60,11 +55,9 @@ describe('collect',function() {
         return [d];
       });
 
-      var collect = etl.collect(1);
-
-      dataStream().pipe(collect);
-
-      return inspect(collect)
+      return dataStream()
+        .pipe(etl.collect(1))
+        .promise()
         .then(function(d) {
           assert.deepEqual(d,expected);
         });

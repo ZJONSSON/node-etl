@@ -1,5 +1,4 @@
 var etl = require('../index'),
-    inspect = require('./lib/inspect'),
     Promise = require('bluebird'),
     assert = require('assert'),
     data = require('./data'),
@@ -24,9 +23,8 @@ describe('mongo update',function() {
       var data = etl.map();
       data.end({name:'single record',__line:999});
 
-      data.pipe(insert);
-
-      return inspect(insert)
+      return data.pipe(insert)
+        .promise()
         .then(function(d) {
           d = d[0];
           assert.equal(d.nUpserted,1);   
@@ -38,8 +36,8 @@ describe('mongo update',function() {
       var data = etl.map();
       data.end({name:'updated single record',__line:999});
 
-      data.pipe(insert);
-      return inspect(insert)
+      return data.pipe(insert) 
+        .promise()
         .then(function(d) {
           d = d[0];
           if (d.nModified === null)
@@ -57,11 +55,10 @@ describe('mongo update',function() {
           .then(function(collection) {
             var update = etl.mongo.update(collection,['name'],{pushResult:true});
 
-            data.stream()
+            return data.stream()
               .pipe(etl.collect(100))
-              .pipe(update);
-
-            return inspect(update);
+              .pipe(update)
+              .promise();
           })
           .then(function(d) {
             d = d[0];
@@ -78,10 +75,9 @@ describe('mongo update',function() {
           .then(function(collection) {
             var update = etl.mongo.update(collection,['name']);
 
-            data.stream()
-              .pipe(update);
-
-            return inspect(update);
+            return data.stream()
+              .pipe(update)
+              .promise();
           })
           .then(function(d) {
             assert.deepEqual(d,[]);
@@ -97,7 +93,7 @@ describe('mongo update',function() {
               .then(function() {
                 var update = etl.mongo.update(collection,['name'],{pushResult:true});
 
-                data.stream()
+                return data.stream()
                   .pipe(etl.map(function(d) {
                     if (d.name == 'Nathaniel Olson')
                       d.name = 'Not Found';
@@ -105,9 +101,8 @@ describe('mongo update',function() {
                     return d;
                   }))
                   .pipe(etl.collect(100))
-                  .pipe(update);
-
-                return inspect(update);
+                  .pipe(update)
+                  .promise();
               });
           })
           .then(function(d) {
@@ -142,11 +137,11 @@ describe('mongo update',function() {
           .then(function(collection) {
             var upsert = etl.mongo.update(collection,['name'],{pushResult:true,upsert:true});
 
-            data.stream()
+            return data.stream()
               .pipe(etl.collect(100))
-              .pipe(upsert);
+              .pipe(upsert)
+              .promise();
 
-            return inspect(upsert);
           })
           .then(function(d) {
             d = d[0];

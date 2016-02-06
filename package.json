@@ -1,6 +1,6 @@
 {
   "name": "etl",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Collection of stream-based components that form an ETL pipeline",
   "main": "index.js",
   "author": "Ziggy Jonsson (http://github.com/zjonsson/)",
@@ -11,18 +11,16 @@
   "scripts": {
     "test": "mocha"
   },
-  "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^2.10.2",
-    "csv-parser": "^1.8.0",
-    "elasticsearch": "^8.2.0",
-    "moment": "^2.10.6",
-    "streamz": "^1.4.1"
+    "bluebird": "~3.2.2",
+    "csv-parser": "~1.8.0",
+    "moment": "~2.10.6",
+    "streamz": "~1.5.1"
   },
   "devDependencies": {
-    "mongodb": "^2.0.46",
-    "elasticsearch": "^8.2.0",
-    "mysql": "^2.9.0"
+    "mongodb": "~2.1.6",
+    "elasticsearch": "~8.2.0",
+    "mysql": "~2.9.0"
   }
 }

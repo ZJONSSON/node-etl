@@ -1,5 +1,4 @@
 var etl = require('../index'),
-    inspect = require('./lib/inspect'),
     assert = require('assert'),
     data = require('./data');
 
@@ -8,9 +7,10 @@ describe('fixed layout',function() {
     it('splits incoming data into columns',function() {
       var fixed = etl.fixed(data.layout);
 
-      data.stream().pipe(fixed);
-      
-      return inspect(fixed.pipe(etl.expand()))
+      return data.stream()
+        .pipe(fixed)
+        .pipe(etl.expand())
+        .promise()
         .then(function(d) {
           assert.deepEqual(d,data.data);
         });
@@ -27,10 +27,10 @@ describe('fixed layout',function() {
 
       var fixed = etl.fixed(layout);
 
-      data.stream().pipe(fixed);
-
-      
-      return inspect(fixed.pipe(etl.expand()))
+      return data.stream()
+        .pipe(fixed)
+        .pipe(etl.expand())
+        .promise()
         .then(function(d) {
           assert.deepEqual(d,data.data);
         });

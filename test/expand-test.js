@@ -1,5 +1,4 @@
 var etl = require('../index'),
-    inspect = require('./lib/inspect'),
     assert = require('assert'),
     data = require('./data');
 
@@ -7,7 +6,9 @@ var etl = require('../index'),
 describe('expanded',function() {
   describe('without',function() {
     it('prototype keys are not visible',function() {
-      inspect(data.stream({clone:true}).pipe(etl.streamz()))
+      return data.stream({clone:true})
+        .pipe(etl.map())
+        .promise()
         .then(function(d) {
           d.forEach(function(d) {
             assert.deepEqual(Object.keys(d),{});
@@ -18,7 +19,9 @@ describe('expanded',function() {
 
   describe('with',function() {
     it('prototype keys become visible',function() {
-      inspect(data.stream({clone:true}).pipe(etl.expand()).pipe(etl.streamz()))
+      return data.stream({clone:true})
+        .pipe(etl.expand())
+        .promise()
         .then(function(d) {
           assert.deepEqual(d,data.data);
         });
@@ -31,7 +34,9 @@ describe('expanded',function() {
     });
 
     it('transforms keys',function() {
-      inspect(data.stream({clone:true}).pipe(etl.expand('uppercase')).pipe(etl.streamz()))
+      return data.stream({clone:true})
+        .pipe(etl.expand('uppercase'))
+        .promise()
         .then(function(d) {
           d.forEach(function(d) {
             assert.deepEqual(Object.keys(d),ukeys);
@@ -46,7 +51,9 @@ describe('expanded',function() {
     });
 
     it('transforms keys',function() {
-      inspect(data.stream({clone:true}).pipe(etl.expand('lowercase')).pipe(etl.streamz()))
+      return data.stream({clone:true})
+        .pipe(etl.expand('lowercase'))
+        .promise()
         .then(function(d) {
           d.forEach(function(d) {
             assert.deepEqual(Object.keys(d),lkeys);
@@ -71,7 +78,9 @@ describe('expanded',function() {
       });
 
     it('transforms keys',function() {
-      inspect(data.stream({clone:true}).pipe(etl.expand(customTransform)).pipe(etl.streamz()))
+      return data.stream({clone:true})
+        .pipe(etl.expand(customTransform))
+        .promise()
         .then(function(d) {
           d.forEach(function(d) {
             assert.deepEqual(Object.keys(d),ckeys);

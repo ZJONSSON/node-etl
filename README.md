@@ -233,10 +233,13 @@ Example:
 
 ```js
 etl.file('test.csv')
-  .pipe(function(inbound) {
+  .pipe(etl.chain(function(inbound) {
     return inbound
       .pipe(etl.csv())
       .pipe(etl.collect(100));
-  })
+  }))
   .pipe(console.log);
 ```
+
+### `etl.stream(data)`
+A helper function that returns a stream that is initialized by writing every element of the supplied data (if array) before being ended.  This allows for an easy transition from a known set of elements to a flowing stream with concurrency control.

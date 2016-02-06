@@ -48,7 +48,7 @@ describe('mysql',function() {
   it('and records are verified',function() {
     return p.query('SELECT * from circle_test.test')
       .then(function(d) {
-        assert.deepEqual(d[0],data.data.map(function(d) {
+        assert.deepEqual(d,data.data.map(function(d) {
           return {
             name : d.name,
             age : d.age,

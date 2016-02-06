@@ -39,9 +39,7 @@ describe('elastic bulk insert',function() {
       .on('error',console.log);
 
     return inspect(upsert).then(function(d) {
-      
-      assert.equal(d[0][0].items.length,3);
-      
+      assert.equal(d[0].items.length,3);
     });
   });
 

@@ -1,4 +1,5 @@
 var etl = require('../index'),
+    Promise = require('bluebird'),
     PassThrough = require('stream').PassThrough,
     assert = require('assert');
 
@@ -60,6 +61,23 @@ describe('collect',function() {
         .promise()
         .then(function(d) {
           assert.deepEqual(d,expected);
+        });
+    });
+  });
+
+  describe('with maxDuration',function() {
+    it('pushes on timeouts',function() {
+      return etl.toStream([1,2,3,4,5,6,7,8,9,10])
+        .pipe(etl.map(function(d) {
+          return Promise.delay(50)
+            .then(function() {
+              return d;
+            });
+        }))
+        .pipe(etl.collect(5,150))
+        .promise()
+        .then(function(d) {
+          assert.deepEqual(d,[[1,2,3],[4,5,6],[7,8,9],[10]]);
         });
     });
   });

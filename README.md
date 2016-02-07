@@ -75,8 +75,8 @@ etl.file('test.csv')
   });
 ```
 
-### `etl.collect(count)`
-Buffers incoming packets until they reach a specified count and then sends the array of the buffered packets downstream. At the end of the incoming stream, any buffered items are shipped off even though the count has not been achieved.   This functionality can come in handy when preparing to bulk-insert into databases.
+### `etl.collect(count,[maxDuration])`
+Buffers incoming packets until they reach a specified count and then sends the array of the buffered packets downstream. At the end of the incoming stream, any buffered items are shipped off even though the count has not been achieved.   This functionality can come in handy when preparing to bulk-insert into databases.   An optional `maxDuration` can be supplied to signal the maximum amount of time (in ms) that can pass from a new collection starting until the contents are pushed out.  This can come in handy when processing real time sporadic data where we want the collection to flush early even if the count has not been reached.
 
 Example:
 

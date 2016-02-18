@@ -190,7 +190,7 @@ etl.file('test.csv')
 ### `etl.elastic.bulk(action,client,index,type,[options])`
 Transmit incoming packets to elasticsearch, setting the appropriate meta-data depending on the default action. Each incoming packet can be an array of documents (or a single document).  Each document should contain a unique `_id`.   To bulk documents together use `etl.collect(num)` above the elastic adapter.
 
-The results are not pushed downstream unless `pushResults` is defined in the options.  Maximum number of concurrent connections can be defined as option `concurrency`.
+The results are not pushed downstream unless `pushResults` is defined in the options. The body of the incoming data is included in the results, allowing for easy resubmission upon version conflicts.  Maximum number of concurrent connections can be defined as option `concurrency`.
 
 Available actions are also provided as separate api commands:
 
@@ -241,5 +241,5 @@ etl.file('test.csv')
   .pipe(console.log);
 ```
 
-### `etl.stream(data)`
+### `etl.toStream(data)`
 A helper function that returns a stream that is initialized by writing every element of the supplied data (if array) before being ended.  This allows for an easy transition from a known set of elements to a flowing stream with concurrency control.

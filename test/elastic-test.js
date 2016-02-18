@@ -35,10 +35,10 @@ describe('elastic bulk insert',function() {
       }))
       .pipe(etl.collect(100))
       .pipe(upsert)
-      .on('error',console.log)
       .promise()
       .then(function(d) {
         assert.equal(d[0].items.length,3);
+        assert.deepEqual(d[0].items[0].body,data.data[0]);
       });
   });
 

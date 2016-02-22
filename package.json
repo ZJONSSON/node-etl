@@ -15,7 +15,7 @@
   "dependencies": {
     "bluebird": "~3.2.2",
     "csv-parser": "~1.8.0",
-    "duplexer2": "^0.1.4",
+    "duplexer2": "~0.1.4",
     "moment": "~2.10.6",
     "streamz": "~1.5.1"
   },

@@ -190,7 +190,7 @@ etl.file('test.csv')
 ### `etl.elastic.bulk(action,client,index,type,[options])`
 Transmit incoming packets to elasticsearch, setting the appropriate meta-data depending on the default action. Each incoming packet can be an array of documents (or a single document).  Each document should contain a unique `_id`.   To bulk documents together use `etl.collect(num)` above the elastic adapter.
 
-The results are not pushed downstream unless `pushResults` is defined in the options. The body of the incoming data is included in the results, allowing for easy resubmission upon version conflicts.  Maximum number of concurrent connections can be defined as option `concurrency`.
+The results are not pushed downstream unless `pushResults` is defined in the options. The body of the incoming data is included in the results, allowing for easy resubmission upon version conflicts.  Maximum number of concurrent connections can be defined as option `concurrency`.  If `maxRetries` is defined in options, an error response from the server will result in retries up to the specified limit - after a wait of `retryDelay` or 30 seconds.  This can be useful for long-running upsert operations that might encounter the occasional network or timeout errors along the way.  If `debug` is defined true, the error message will be printed to console before retrying.  `maxRetries` should only be used for data with user-supplied `_id` to prevent potential duplicate records on retry.
 
 Available actions are also provided as separate api commands:
 

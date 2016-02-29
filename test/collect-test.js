@@ -81,4 +81,26 @@ describe('collect',function() {
         });
     });
   });
+
+  describe('with maxTextLength',function() {
+    it('pushes when text reaches max',function() {
+      var data = [
+        {text:'test'},
+        {text:'test'},
+        {text:'this is a really long string'},
+        {text:'test'}
+      ];
+
+      return etl.toStream(data)
+        .pipe(etl.collect(1000,1000,15))
+        .promise()
+        .then(d => {
+          assert.deepEqual(d,[
+            [data[0],data[1]],
+            [data[2]],
+            [data[3]]
+          ]);
+        });
+    });
+  });
 });

@@ -94,7 +94,7 @@ describe('collect',function() {
       return etl.toStream(data)
         .pipe(etl.collect(1000,1000,15))
         .promise()
-        .then(d => {
+        .then(function(d) {
           assert.deepEqual(d,[
             [data[0],data[1]],
             [data[2]],

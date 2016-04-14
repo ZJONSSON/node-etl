@@ -258,3 +258,21 @@ etl.file('test.csv')
 
 ### `etl.toStream(data)`
 A helper function that returns a stream that is initialized by writing every element of the supplied data (if array) before being ended.  This allows for an easy transition from a known set of elements to a flowing stream with concurrency control.
+
+### `etl.toFile(filename)`
+This is a convenience wrapper for `fs.createWriteStream` that returns a `streamz` object.  This allows appending `.promise()` to capture the finish event (or error) in a promise form.
+
+Example:
+
+```js
+etl.toStream([1,2,3,4,5])
+  .pipe(etl.stringify(0,null,true))
+  .pipe(etl.toFile('/tmp/test.txt'))
+  .promise()
+  .then(function() {
+    console.log('done')
+  })
+  .catch(function(e) {
+    console.log('error',e);
+  })
+```

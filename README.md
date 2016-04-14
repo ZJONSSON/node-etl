@@ -226,8 +226,8 @@ etl.elastic.scroll(esClient,{index: 'index.a', size: 5000})
 
 If `custom` action is selected, each packet must be the raw metadata to be sent to elasticsearch with the optional second line stored in property `body`
 
-### `etl.stringify([indent],[replacer])`
-Transforms incoming packets into JSON stringified versions, with optional `indent` and `replacer`
+### `etl.stringify([indent],[replacer],[newline])`
+Transforms incoming packets into JSON stringified versions, with optional `indent` and `replacer`.  If `newline` is true a `\n` will be appended to each packet.
 
 ### `etl.inspect([options])`
 Logs incoming packets to console using `util.inspect` (with optional custom options)
@@ -258,3 +258,21 @@ etl.file('test.csv')
 
 ### `etl.toStream(data)`
 A helper function that returns a stream that is initialized by writing every element of the supplied data (if array) before being ended.  This allows for an easy transition from a known set of elements to a flowing stream with concurrency control.
+
+### `etl.toFile(filename)`
+This is a convenience wrapper for `fs.createWriteStream` that returns a `streamz` object.  This allows appending `.promise()` to capture the finish event (or error) in a promise form.
+
+Example:
+
+```js
+etl.toStream([1,2,3,4,5])
+  .pipe(etl.stringify(0,null,true))
+  .pipe(etl.toFile('/tmp/test.txt'))
+  .promise()
+  .then(function() {
+    console.log('done')
+  })
+  .catch(function(e) {
+    console.log('error',e);
+  })
+```

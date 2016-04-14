@@ -226,8 +226,8 @@ etl.elastic.scroll(esClient,{index: 'index.a', size: 5000})
 
 If `custom` action is selected, each packet must be the raw metadata to be sent to elasticsearch with the optional second line stored in property `body`
 
-### `etl.stringify([indent],[replacer])`
-Transforms incoming packets into JSON stringified versions, with optional `indent` and `replacer`
+### `etl.stringify([indent],[replacer],[newline])`
+Transforms incoming packets into JSON stringified versions, with optional `indent` and `replacer`.  If `newline` is true a `\n` will be appended to each packet.
 
 ### `etl.inspect([options])`
 Logs incoming packets to console using `util.inspect` (with optional custom options)

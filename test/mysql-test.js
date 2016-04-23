@@ -28,15 +28,8 @@ before(function() {
  
 describe('mysql',function() {
   it('inserts',function() {
-
-    var script = etl.mysql.script(pool,'circle_test','test'),
-        execute = etl.mysql.execute(pool,{pushResult:true}),
-        end = etl.map();
-    
     return data.stream()
-      .pipe(script)
-      .pipe(execute)
-      .pipe(end)
+      .pipe(etl.mysql.upsert(pool,'circle_test','test',{pushResult:true}))
       .promise()
       .then(function(d) {
         assert.equal(d[0].affectedRows,3);

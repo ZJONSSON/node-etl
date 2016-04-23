@@ -167,12 +167,16 @@ etl.file('test.csv')
 
 ```
 
-### `etl.mysql.script(pool,schema,table,[options])`
+### `etl.mysql.upsert(pool,schema,table,[options])`
+
+Pipeline that scripts incoming packets into bulk sql commands (`etl.mysql.script`) and executes them (`etl.mysql.execute`) using the supplied mysql pool. When the size of each SQL command reaches `maxBuffer` (1mb by default) the command is sent to the server.  Concurrency is managed automatically by the mysql poolSize. 
+
+#### `etl.mysql.script(pool,schema,table,[options])`
 Collects data and builds up a mysql statement to insert/update data until the buffer is more than `maxBuffer` (customizable in options).  Then the maxBuffer is reached, a full sql statement is pushed downstream.   When the input stream has ended, any remaining sql statement buffer will be flushed as well.
 
 The script stream first establishes the column names of the table being updated, and as data comes in - it uses only the properties that match column names in the table.
 
-### `etl.mysql.execute(pool,[options])`
+#### `etl.mysql.execute(pool,[options])`
 This component executes any incoming packets as sql statements using connections from the connection pool. The maximum concurrency is automatically determined by the mysql poolSize, using the combination of callbacks and Promises.
 
 Example:

@@ -1,6 +1,6 @@
 {
   "name": "etl",
-  "version": "0.3.12",
+  "version": "0.3.14",
   "description": "Collection of stream-based components that form an ETL pipeline",
   "main": "index.js",
   "author": "Ziggy Jonsson (http://github.com/zjonsson/)",
@@ -17,7 +17,7 @@
     "csv-parser": "~1.8.0",
     "duplexer2": "~0.1.4",
     "moment": "~2.12.0",
-    "streamz": "~1.5.1"
+    "streamz": "~1.5.2"
   },
   "devDependencies": {
     "mongodb": "~2.1.6",

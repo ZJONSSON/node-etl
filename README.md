@@ -55,6 +55,20 @@ etl.file('test.txt')
 ### `etl.cut(maxLength)`
 Cuts incoming text into text snippets of a given maximum length and pushes downstream.
 
+### `etl.timeout(ms)`
+A passthrough transform that emits an error if no data has passed through for at least the supplied milliseconds (`ms`).  This is useful to manage pipelines that go stale for some reason and need to be errored out for further inspection.
+
+Example:
+
+```js
+// Here the pipeline times out if no data has been flowing to the file for at least 1 second
+mongocollection.find({})
+  .pipe(lookup)
+  .timeout(1000)
+  .pipe(etl.toFile('test.json'))
+```
+
+
 ### `etl.csv_parser([options])`
 Parses incoming csv text into individual records.  For parsing options see [csv-parser](https://www.npmjs.com/package/csv-parser).  If  `options` contains a `transform` object containing functions, those functions will be applied on the values of any matching keys in the data.  If a key in the `transform` object is set to `null` then value with that key will not be included in the downstream packets.  If option `santitize` is set to true, then headers will be trimmed, converted to lowercase, spaces converted to underscore and any blank values (empty strings) will be set to undefined.
 

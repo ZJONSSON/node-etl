@@ -34,6 +34,8 @@ fs.createReadStream('scores.csv')
   * [Elasticsearch](#elasticsearch)
 * [Utilities](#utilities)
 
+Please note that the cluster API has changed slightly in version `0.3.x`
+
 ### Parsers 
 
 <a name="csv" href="#csv">#</a> etl.<b>csv</b>([<i>options</i>])
@@ -314,18 +316,19 @@ If `custom` action is selected, each packet must be the raw metadata to be sent 
 
 ### Cluster
 
-<a name="clusterschedule" href="#clusterschedule">#</a> etl.cluster.<b>schedule</b>(<i>list</i> [,<i>num_threads</i>] [,<i>reportingInterval</i>])
+<a name="clusterschedule" href="#clusterschedule">#</a> etl.cluster.<b>schedule</b>(<i>list</i> [,<i>options</i>])
 
-Schedules a list (array) of tasks to be performed by workers.  Returns a promise on the completion of all the tasks.   Number of threads will default to number of cpus.  If reporting interval is defined - progress will be reported in console.log.Should only be run from the master thread.  
+Schedules a list (array) of tasks to be performed by workers.  Returns a promise on the completion of all the tasks.   Number of threads will default to number of cpus, but can also be specified as `threads` in options.  If `reportingInterval` is defined in options, the current progress (as reported) will be shown at the defined interval.
 
-<a name="clusterprocess" href="#clusterprocess">#</a> etl.cluster.<b>process</b>(<i>data</i> <i>callback</i>) 
+  If reporting interval is defined - progress will be reported in console.log.Should only be run from the master thread.  
 
-This function should be overwritten in the worker to perform each task and call the callback then done.
+<a name="clusterprocess" href="#clusterprocess">#</a> etl.cluster.<b>process</b>(<i>data</i>) 
 
-<a name="clusterprocess" href="#clusterprocess">#</a> etl.cluster.<b>process</b>(<i>num</i>)
+This function should be overwritten in the worker to perform each task.  The function should either run a value (for synchronous execution) or a Promise.  Any errors will be sent to the master and result in a `throw`
+
+<a name="clusterreport" href="#clusterreport">#</a> etl.cluster.<b>report</b>(<i>num</i>)
 
 This function sends a numerical value representing progress up to the master (for reporting).  
-
 
 ### Utilities
 

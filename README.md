@@ -153,6 +153,20 @@ etl.file('test.csv')
   .pipe(console.log);
 ```
 
+Alternatively if the supplied function has two arguments, the first argument is the inbound stream and the second argument will be the outbound stream.  In this case the return value of the function will be ignored.
+
+Example:
+```js
+etl.file('test.csv')
+  .pipe(etl.chain(function(inbound,outbound) {
+    inbound
+      .pipe(etl.csv())
+      .pipe(etl.collect(100))
+      .pipe(outbound);
+  }))
+  .pipe(console.log);
+```
+
 <a name="expand" href="#expand">#</a> etl.<b>expand</b>([<i>convert</i>])
 
 Throughout the etl pipeline new packets are generated with incoming packets as prototypes (using `Object.create`).  This means that inherited values are not enumerable and will not show up in stringification by default (although they are available directly).  `etl.expand()` loops through all keys of an incoming packet and explicitly sets any inherited values as regular properties of the object

@@ -39,6 +39,29 @@ describe('chain',function() {
       });
   });
 
+   it('uses second argument as outStream',function() {
+
+    var expected = [
+      [1,2,3],
+      [4,5,6],
+      [7,8,9],
+      [10,11]
+    ];
+
+    return dataStream()
+      .pipe(etl.chain(function(stream,out) {
+        stream
+          .pipe(etl.map())
+          .pipe(etl.collect(3))
+          .pipe(etl.map())
+          .pipe(out);
+      }))
+      .promise()
+      .then(function(d) {
+        assert.deepEqual(d,expected);
+      });
+  });
+
   it('bubbles errors in subchain',function() {
 
     var chain = etl.map();

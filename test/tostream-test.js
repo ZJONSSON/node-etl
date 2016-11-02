@@ -1,25 +1,76 @@
 var etl = require('../index'),
     assert = require('assert');
 
-
 describe('toStream',function() {
-  it('starts a stream using supplied data',function() {
-    return etl.toStream([1,2,[3,4]])
-      .pipe(etl.map(function(d) {
-        return [d];
-      }))
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,[[1],[2],[[3,4]]]);
-      });
+  describe('static data',function() {
+    it('streams supplied data',function() {
+      return etl.toStream([1,2,[3,4]])
+        .pipe(etl.map(function(d) {
+          return [d];
+        }))
+        .promise()
+        .then(function(d) {
+          assert.deepEqual(d,[[1],[2],[[3,4]]]);
+        });
+    });
+
+    it('no data returns empty stream',function() {
+      return etl.toStream()
+        .promise()
+        .then(function(d) {
+          assert.deepEqual(d,[]);
+        });
+    });
   });
 
-  it('with no data is an empty stream',function() {
-    return etl.toStream()
+  describe('function input',function() {
+    it('streams the function results',function() {
+      return etl.toStream(function() {
+        return([1,2,[3,4]]);
+      })
+      .promise()
+      .then(function(d) {
+        assert.deepEqual(d,[1,2,[3,4]]);
+      });
+    });
+
+    it('streams `this.push` and function results',function() {
+      return etl.toStream(function() {
+        this.push(1);
+        this.push(2);
+        return [[3,4]]
+      })
+      .promise()
+      .then(function(d) {
+        assert.deepEqual(d,[1,2,[3,4]]);
+      });
+    });
+
+    it('no data returns empty stream',function() {
+      return etl.toStream(function() {
+      })
       .promise()
       .then(function(d) {
         assert.deepEqual(d,[]);
       });
+    });
   });
-    
+
+  describe('promise input',function() {
+    it('streams the resolved values',function() {
+      return etl.toStream(Promise.resolve([1,2,[3,4]]))
+      .promise()
+      .then(function(d) {
+        assert.deepEqual(d,[1,2,[3,4]]);
+      });
+    });
+
+    it('no data returns empty stream',function() {
+      return etl.toStream(Promise.resolve())
+      .promise()
+      .then(function(d) {
+        assert.deepEqual(d,[]);
+      });
+    });
+  });
 });

@@ -345,7 +345,7 @@ This function sends a numerical value representing progress up to the master (fo
 
 <a name="tostream" href="#tostream">#</a> etl.<b>toStream</b>(<i>data</i>)
 
-A helper function that returns a stream that is initialized by writing every element of the supplied data (if array) before being ended.  This allows for an easy transition from a known set of elements to a flowing stream with concurrency control.
+A helper function that returns a stream that is initialized by writing every element of the supplied data (if array) before being ended.  This allows for an easy transition from a known set of elements to a flowing stream with concurrency control.  The input `data` can also be supplied as a promise or a function and the resulting values will be piped to the returned stream.
 
 <a name="file" href="#file">#</a> etl.<b>file</b>(<i>data</i> [,<i>options</i>])
 

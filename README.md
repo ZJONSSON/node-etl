@@ -378,3 +378,7 @@ etl.toStream([1,2,3,4,5])
     console.log('error',e);
   })
 ```
+
+<a name="keepopen" href="#keepopen">#</a> etl.<b>keepOpen</b>(<i>[timeout]</i>)
+
+`etl.keepOpen([timeout])` is a passthrough component that stays open after receiving an `end` only to finally close down when no data has passed through for a period of `[timeout]`.  This can be useful for any pipelines where data from lower part of the pipeline is pushed back higher for reprocessing (for example when encountering version conflicts of database documents) - as it will avoid `write after end` error.   The default timeout is 1000ms

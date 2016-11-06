@@ -73,4 +73,27 @@ describe('toStream',function() {
       });
     });
   });
+
+   describe('function returning a stream input',function() {
+    it('streams the resolved values',function() {
+      return etl.toStream(function() {
+        return etl.toStream([1,2,[3,4]]);
+      })
+      .promise()
+      .then(function(d) {
+        assert.deepEqual(d,[1,2,[3,4]]);
+      });
+    });
+
+    it('no data returns empty stream',function() {
+      return etl.toStream(function() {
+        return etl.toStream();
+      })
+      .promise()
+      .then(function(d) {
+        assert.deepEqual(d,[]);
+      });
+    });
+  });
+
 });

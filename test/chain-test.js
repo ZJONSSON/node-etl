@@ -4,6 +4,13 @@ var etl = require('../index'),
 
 var data = [1,2,3,4,5,6,7,8,9,10,11];
 
+var expected = [
+    [1,2,3],
+    [4,5,6],
+    [7,8,9],
+    [10,11]
+  ];
+
 function dataStream() {
   var s = PassThrough({objectMode:true});
   data.forEach(function(d,i) {
@@ -17,21 +24,12 @@ function dataStream() {
 }
   
 describe('chain',function() {
-  it('pipes data through subchain',function() {
-
-    var expected = [
-      [1,2,3],
-      [4,5,6],
-      [7,8,9],
-      [10,11]
-    ];
+  it('works when returning a stream',function() {
 
     return dataStream()
       .pipe(etl.chain(function(stream) {
         return stream
-          .pipe(etl.map())
-          .pipe(etl.collect(3))
-          .pipe(etl.map());
+          .pipe(etl.collect(3));
       }))
       .promise()
       .then(function(d) {
@@ -39,21 +37,12 @@ describe('chain',function() {
       });
   });
 
-   it('uses second argument as outStream',function() {
-
-    var expected = [
-      [1,2,3],
-      [4,5,6],
-      [7,8,9],
-      [10,11]
-    ];
+   it('works using the second argument as outstream',function() {
 
     return dataStream()
       .pipe(etl.chain(function(stream,out) {
         stream
-          .pipe(etl.map())
           .pipe(etl.collect(3))
-          .pipe(etl.map())
           .pipe(out);
       }))
       .promise()
@@ -61,6 +50,22 @@ describe('chain',function() {
         assert.deepEqual(d,expected);
       });
   });
+
+
+   it('works when returning a promise',function() {
+
+    return dataStream()
+      .pipe(etl.chain(function(stream) {
+        return stream
+          .pipe(etl.collect(3))
+          .promise();
+      }))
+      .promise()
+      .then(function(d) {
+        assert.deepEqual(d,expected);
+      });
+  });
+
 
   it('bubbles errors in subchain',function() {
 
@@ -74,12 +79,10 @@ describe('chain',function() {
       .pipe(etl.map())
       .pipe(etl.chain(function(stream) {
         return stream
-          .pipe(etl.map())
           .pipe(etl.map(function() {
             throw 'ERROR';
           }))
-          .pipe(etl.collect(3))
-          .pipe(etl.map());
+          .pipe(etl.collect(3));
       }))
       .promise()
       .then(function() {
@@ -88,5 +91,4 @@ describe('chain',function() {
         assert.equal(e,'ERROR');
       });
   });
-
 });

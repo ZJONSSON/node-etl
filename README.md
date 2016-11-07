@@ -138,10 +138,11 @@ collect.pipe(etl.inspect());
 // Should show 4 packets: [1,2,3]   [4,5,6]    [7,8,9]   [10,11]
 ```
 
-<a name="expand" href="#expand">#</a> etl.<b>chain</b>(<i>fn</i>)
-Allows a custom subchain of streams to be injected into the pipe using duplexer2. You must provide a custom function that returns the outbound stream, after receiving the inbound stream as the first function argument.
+<a name="chain" href="#chain">#</a> etl.<b>chain</b>(<i>fn</i>)
 
-Example:
+Allows a custom subchain of streams to be injected into the pipe using duplexer2. You must provide a custom function that takes in the inbound stream as a first argument and optionally an outbound stream as the second argument.   You can use the optional outbound stream directly to chain the two streams together or you can return a stream or a Promise resolved with stream or values (all of which will be piped down with `etl.toStream`).
+
+Example 1: Simple return of the outbound stream
 
 ```js
 etl.file('test.csv')
@@ -153,9 +154,7 @@ etl.file('test.csv')
   .pipe(console.log);
 ```
 
-Alternatively if the supplied function has two arguments, the first argument is the inbound stream and the second argument will be the outbound stream.  In this case the return value of the function will be ignored.
-
-Example:
+Example: Using the outbond stream from arguments
 ```js
 etl.file('test.csv')
   .pipe(etl.chain(function(inbound,outbound) {

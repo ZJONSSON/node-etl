@@ -331,9 +331,9 @@ If `custom` action is selected, each packet must be the raw metadata to be sent 
 
 Schedules a list (array) of tasks to be performed by workers.  Returns a promise on the completion of all the tasks.   Number of threads will default to number of cpus.  If reporting interval is defined - progress will be reported in console.log.Should only be run from the master thread.  
 
-<a name="clusterprocess" href="#clusterprocess">#</a> etl.cluster.<b>process</b>(<i>data</i> <i>callback</i>) 
+<a name="clusterprocess" href="#clusterprocess">#</a> etl.cluster.<b>process</b>(<i>data</i> <i>[callback]</i>) 
 
-This function should be overwritten in the worker to perform each task and call the callback then done.
+This function should be overwritten in the worker to perform each task and either return a Promise that is resolved when the task is done or call the optional callback.
 
 <a name="clusterprocess" href="#clusterprocess">#</a> etl.cluster.<b>process</b>(<i>num</i>)
 

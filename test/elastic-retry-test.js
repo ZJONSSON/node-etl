@@ -1,21 +1,24 @@
 var etl = require('../index'),
     assert = require('assert'),
-    data = require('./data');
+    data = require('./data'),
+    Promise = require('bluebird');
 
 var data = [],i=0;
 
 // Mock an elastic client
 var client = {
-  bulk : function(options,cb) {
-    setTimeout(function() {
-      // simulate a network error
-      if (i++ == 2)
-        return cb('NETWORK_ERROR');
-      data = data.concat(options.body);
-      cb(null,{
-        items: options.body.map(function() { return {};})
+  bulk : function(options) {
+    return Promise.delay(100)
+      .then(function() {
+        if (i++ == 2)
+          throw 'NETWORK_ERROR';
+        else {
+          data = data.concat(options.body);
+          return {
+            items: options.body.map(function() { return {};})
+          };
+        }
       });
-    },100);
   }
 };
 

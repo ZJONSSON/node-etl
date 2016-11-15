@@ -21,6 +21,9 @@ describe('elastic bulk insert',function() {
       d = d._source;
       d.dt = new Date(d.dt);
       return d;
+    })
+    .sort(function(a,b) {
+      return a.__line - b.__line;
     });
   }
 

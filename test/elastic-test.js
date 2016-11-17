@@ -15,7 +15,6 @@ before(function() {
 
 
 describe('elastic bulk insert',function() {
-
   function convertHits(d) {
     return d.map(function(d) {
       d = d._source;
@@ -67,5 +66,18 @@ describe('elastic bulk insert',function() {
       });
   });
 
-
+  it('streams results with elastic.scroll',function() {
+    var scroll = etl.elastic.scroll(client,{index: 'test', type: 'test', size: 1},{ highWaterMark: 0 });
+    // setting highWaterMark to zero and size = 1 allows us to test for backpressure
+    // a missing scroll_id would indicate that scrolling has finished pre-emptively
+    return scroll.pipe(etl.map(function(d) {
+      assert(scroll.scroll_id && scroll.scroll_id.length,'Scroll id missing -  backpressure not managed');
+      return Promise.delay(200).then(function() { return d; });
+    },{highWaterMark: 0}))
+    .promise()
+    .then(function(d) {
+      assert.equal(scroll.scroll_id,undefined);  // scrolling has finished
+      assert.deepEqual(convertHits(d),data.data);
+    });
+  });
 });

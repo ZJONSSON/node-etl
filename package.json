@@ -22,6 +22,8 @@
   "devDependencies": {
     "mongodb": "~2.1.6",
     "elasticsearch": "~8.2.0",
-    "mysql": "~2.9.0"
+    "mysql": "~2.9.0",
+    "pg": "^6.1.2",
+    "pg-query-stream": "^1.0.0"
   }
 }

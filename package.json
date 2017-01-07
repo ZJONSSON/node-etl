@@ -1,6 +1,6 @@
 {
   "name": "etl",
-  "version": "0.3.32",
+  "version": "0.3.33",
   "description": "Collection of stream-based components that form an ETL pipeline",
   "main": "index.js",
   "author": "Ziggy Jonsson (http://github.com/zjonsson/)",
@@ -22,6 +22,8 @@
   "devDependencies": {
     "mongodb": "~2.1.6",
     "elasticsearch": "~8.2.0",
-    "mysql": "~2.9.0"
+    "mysql": "~2.9.0",
+    "pg": "^6.1.2",
+    "pg-query-stream": "^1.0.0"
   }
 }

@@ -29,8 +29,9 @@ fs.createReadStream('scores.csv')
 * [Parsers](#parsers)
 * [Transforms](#transforms)
 * [Database upload](#databases)
-  * [Mongodb](#mongodb)
+  * [Mongodb](#mongo)
   * [Mysql](#mysql)
+  * [Postgres](#postgres)
   * [Elasticsearch](#elasticsearch)
 * [Utilities](#utilities)
 
@@ -259,10 +260,17 @@ etl.file('test.csv')
 
 Pipeline that scripts incoming packets into bulk sql commands (`etl.mysql.script`) and executes them (`etl.mysql.execute`) using the supplied mysql pool. When the size of each SQL command reaches `maxBuffer` (1mb by default) the command is sent to the server.  Concurrency is managed automatically by the mysql poolSize. 
 
+Example:
+
+```js
+etl.file('test.csv')
+  .pipe(etl.csv())
+  .pipe(etl.mysql.upsert(pool,'testschema','testtable',{concurrency:4 }))
+```
 
 <a name="mysqlscript" href="#mysqlscript">#</a> etl.mysql.<b>script</b>(<i>pool</i>, <i>schema</i>, <i>table</i> [,<i>options</i>])
 
-Collects data and builds up a mysql statement to insert/update data until the buffer is more than `maxBuffer` (customizable in options).  Then the maxBuffer is reached, a full sql statement is pushed downstream.   When the input stream has ended, any remaining sql statement buffer will be flushed as well.
+Collects data and builds up a mysql statement to insert/update data until the buffer is more than `maxBuffer` (customizable in options).  Then the maxBuffer is reached, a full sql statement is pushed downstream.   When the input stream has ended, any remaining sql statement buffer will be flushed as well. 
 
 The script stream first establishes the column names of the table being updated, and as data comes in - it uses only the properties that match column names in the table.
 
@@ -280,6 +288,44 @@ etl.file('test.csv')
   .pipe(etl.csv())
   .pipe(etl.mysql.script(pool,'testschema','testtable'))
   .pipe(etl.mysql.execute(pool,4))
+```
+
+#### Postgres
+
+<a name="postgresupsert" href="#postgresupsert">#</a> etl.postgres.<b>upsert</b>(<i>pool</i>, <i>schema</i>, <i>table</i> [,<i>options</i>])
+
+Pipeline that scripts incoming packets into bulk sql commands (`etl.postgres.script`) and executes them (`etl.postgres.execute`) using the supplied postgres pool. When the size of each SQL command reaches `maxBuffer` (1mb by default) the command is sent to the server.  Concurrency is managed automatically by the postgres poolSize. If primary key is defined and an incoming data packet contains a primary key that already exists in the table, the record will be updated - otherwise the packet will be inserted.
+
+
+Example:
+
+```js
+etl.file('test.csv')
+  .pipe(etl.csv())
+  .pipe(etl.postgres.upsert(pool,'testschema','testtable',{concurrency:4 }))
+```
+
+
+<a name="postgresscript" href="#postgresscript">#</a> etl.postgres.<b>script</b>(<i>pool</i>, <i>schema</i>, <i>table</i> [,<i>options</i>])
+
+Collects data and builds up a postgres statement to insert/update data until the buffer is more than `maxBuffer` (customizable in options).  Then the maxBuffer is reached, a full sql statement is pushed downstream.   When the input stream has ended, any remaining sql statement buffer will be flushed as well.
+
+The script stream first establishes the column names of the table being updated, and as data comes in - it uses only the properties that match column names in the table.
+
+<a name="postgresexecute" href="#postgresexecute">#</a> etl.postgres.<b>execute</b>(<i>pool</i> [,<i>options</i>])
+
+This component executes any incoming packets as sql statements using connections from the connection pool. The maximum concurrency is automatically determined by the postgres poolSize, using the combination of callbacks and Promises.
+
+Example:
+
+```js
+// The following bulks data from the csv into sql statements and executes them with 
+// a maximum of 4 concurrent connections
+
+etl.file('test.csv')
+  .pipe(etl.csv())
+  .pipe(etl.postgres.script(pool,'testschema','testtable'))
+  .pipe(etl.postgres.execute(pool,4))
 ```
 
 #### Elasticsearch

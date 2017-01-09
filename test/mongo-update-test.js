@@ -161,4 +161,18 @@ describe('mongo update',function() {
       });
     });
   });
+
+  describe('error in collection',function() {
+    it('emits error',function() {
+      var collection = Promise.reject(new Error('CONNECTION_ERROR'));
+      return etl.toStream({test:true})
+        .pipe(etl.mongo.update(collection,'_id'))
+        .promise()
+        .then(function() {
+          throw 'SHOULD_ERROR';
+        },function(e) {
+          assert.equal(e.message,'CONNECTION_ERROR');
+        });
+    });
+  });
 });

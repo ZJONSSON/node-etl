@@ -43,4 +43,15 @@ describe('mongo.insert',function() {
       });
   });
 
+  it('error in collection emits error',function() {
+    var collection = Promise.reject(new Error('CONNECTION_ERROR'));
+    return etl.toStream({test:true})
+      .pipe(etl.mongo.update(collection,'_id'))
+      .promise()
+      .then(function() {
+        throw 'SHOULD_ERROR';
+      },function(e) {
+        assert.equal(e.message,'CONNECTION_ERROR');
+      });
+  });
 });

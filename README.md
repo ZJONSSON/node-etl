@@ -226,7 +226,7 @@ Example
 // The following inserts data from a csv, 10 records at a time into a mongo collection
 // ..assuming mongo has been promisified
 
-var db = mongo.ConnectAsync('mongodb://localhost:27017');
+var db = mongo.ConnectAsync('mongodb://localhost:27017/testdb');
 var collection = db.then(function(db) {
   return db.collection('testcollection');
 });
@@ -234,7 +234,7 @@ var collection = db.then(function(db) {
 etl.file('test.csv')
   .pipe(etl.csv())
   .pipe(etl.collect(10))
-  .pipe(mongo.insert(collection));
+  .pipe(etl.mongo.insert(collection));
 
 ```
 
@@ -250,9 +250,13 @@ Example
 etl.file('test.csv')
   .pipe(etl.csv())
   .pipe(etl.collect(100))
-  .pipe(mongo.update(collection,['personId']));
+  .pipe(etl.mongo.update(collection,['personId']));
 
 ```
+
+<a name="mongouupsert" href="#mongoupsert">#</a> etl.mongo.<b>upsert</b>(<i>collection</i> [,<i>keys</i>] [,<i>options</i>])
+
+Syntax sugar for `mongo.update` with `{upsert: true}`
 
 #### Mysql
 

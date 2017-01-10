@@ -131,7 +131,7 @@ describe('mongo update',function() {
       });
     });
 
-    describe('using upsert',function() {
+    describe('using upsert option',function() {
       it('should populate',function() {
         return mongo.getCollection('upsert')
           .then(function(collection) {
@@ -159,6 +159,50 @@ describe('mongo update',function() {
             assert.deepEqual(d,data.data);
           });
       });
+    });
+
+    describe('using upsert function',function() {
+      it('should populate',function() {
+        return mongo.getCollection('upsert2')
+          .then(function(collection) {
+            var upsert = etl.mongo.upsert(collection,['name'],{pushResult:true});
+
+            return data.stream()
+              .pipe(etl.collect(100))
+              .pipe(upsert)
+              .promise();
+
+          })
+          .then(function(d) {
+            d = d[0];
+            assert.equal(d.nUpserted,3);
+            assert.equal(d.nMatched,0);
+         });
+      });
+
+      it('results are saved',function() {
+        return mongo.getCollection('upsert2')
+          .then(function(collection) {
+            return collection.find({},{_id:false}).toArrayAsync();
+          })
+          .then(function(d) {
+            assert.deepEqual(d,data.data);
+          });
+      });
+    });
+  });
+
+  describe('error in collection',function() {
+    it('emits error',function() {
+      var collection = Promise.reject(new Error('CONNECTION_ERROR'));
+      return etl.toStream({test:true})
+        .pipe(etl.mongo.update(collection,'_id'))
+        .promise()
+        .then(function() {
+          throw 'SHOULD_ERROR';
+        },function(e) {
+          assert.equal(e.message,'CONNECTION_ERROR');
+        });
     });
   });
 });

@@ -96,4 +96,18 @@ describe('toStream',function() {
     });
   });
 
+  describe('error in the function ',function() {
+    it('is passed downstream',function() {
+      return etl.toStream(function() {
+        throw 'ERROR';
+      })
+      .promise()
+      .then(function() {
+        throw 'SHOULD_ERROR';
+      },function(e) {
+        assert.equal(e,'ERROR');
+      });
+    });
+  });
+
 });

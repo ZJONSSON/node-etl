@@ -103,4 +103,28 @@ describe('collect',function() {
         });
     });
   });
+
+  describe('custom function',function() {
+    it('runs and flush pushes remaining buffer',function() {
+
+      var expected = [
+        [1,2,3],
+        [4,5,6],
+        [7,8,9,10,11]
+      ];
+
+      return dataStream()
+        .pipe(etl.collect(function(d) {
+          this.buffer.push(d);
+          if (d < 7 && this.buffer.length > 2)
+            this._push();
+        }))
+        .promise()
+        .then(function(d) {
+          assert.deepEqual(d,expected);
+        });
+    });
+  });
+
+
 });

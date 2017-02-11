@@ -139,6 +139,8 @@ collect.pipe(etl.inspect());
 // Should show 4 packets: [1,2,3]   [4,5,6]    [7,8,9]   [10,11]
 ```
 
+If the first argument (`count`) is a function it will be used as a custom collection function.  This function can add elements to the buffer by: `this.buffer.push(data)` and push buffer downstream by: `this._push()`.   When stream is ended any remaining buffer is pushed automatically.
+
 <a name="chain" href="#chain">#</a> etl.<b>chain</b>(<i>fn</i>)
 
 Allows a custom subchain of streams to be injected into the pipe using duplexer2. You must provide a custom function that takes in the inbound stream as a first argument and optionally an outbound stream as the second argument.   You can use the optional outbound stream directly to chain the two streams together or you can return a stream or a Promise resolved with stream or values (all of which will be piped down with `etl.toStream`).

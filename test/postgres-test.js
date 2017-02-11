@@ -43,7 +43,7 @@ describe('postgres',function() {
   });
 
   it('and records are verified',function() {
-    return p.query('SELECT * from test')
+    return p.query('SELECT * from test order by age')
       .then(function(d) {
         assert.deepEqual(d.rows,data.data.map(function(d) {
           return {
@@ -51,7 +51,7 @@ describe('postgres',function() {
             age : d.age,
             dt : d.dt
           };
-        }));
+        }).sort(function(a,b) { return a.age - b.age}));
       });
   });
 

@@ -20,8 +20,9 @@
     "streamz": "~1.7.0"
   },
   "devDependencies": {
-    "mongodb": "~2.1.6",
     "elasticsearch": "~8.2.0",
+    "mocha": "^3.2.0",
+    "mongodb": "~2.1.6",
     "mysql": "~2.9.0",
     "pg": "^6.1.2",
     "pg-query-stream": "^1.0.0"

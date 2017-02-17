@@ -13,6 +13,34 @@ before(function() {
     .catch(Object);
 });
 
+describe('Bulk', function(){
+  describe('#getMeta', function(){
+    var bulk = etl.elastic.bulk("index", {});
+    var d = {_id: "1", parent: "testparent", _index: "testindex", _type: "testtype"};
+    var metaData = bulk.getMeta(d);
+
+    it('returns Object with key "index"',function(){
+      assert(metaData.hasOwnProperty('index'))
+    });
+
+    it('includes parent=testparent', function(){
+      assert.equal(metaData.index.parent,"testparent")
+    });
+
+    it('includes _id=1', function(){
+      assert.equal(metaData.index._id,"1")
+    });
+
+    it('includes type=testtype', function(){
+      assert.equal(metaData.index._type,"testtype")
+    });
+
+    it('includes index=testindex', function(){
+      assert.equal(metaData.index._index,"testindex")
+    });
+  });
+});
+
 
 describe('elastic bulk insert',function() {
   function convertHits(d) {

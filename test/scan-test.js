@@ -38,6 +38,23 @@ describe('prescan',function() {
       });
   });
 
+  it('works when requested size is larger than actual',function() {
+    var prescanned;
+    return dataStream()
+      .pipe(etl.prescan(100,function(d) {
+        assert.deepEqual(d,data);
+        prescanned = true;
+      }))
+      .pipe(etl.map(function(d) {
+        assert(prescanned);
+        return d;
+      }))
+      .promise()
+      .then(function(d) {
+        assert.deepEqual(d,data);
+      });
+  });
+
   it('works with a string',function() {
     var text = [
       'Lorem ipsum dolor sit amet, ',

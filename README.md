@@ -169,6 +169,35 @@ etl.file('test.csv')
   .pipe(console.log);
 ```
 
+<a name="prescan" href="#prescan">#</a> etl.<b>prescan</b>(<i>size</i>,<i>fn</i>)
+
+Buffers the incoming data until the supplied size is reached (either number of records for objects or buffer/string length). When target size is reached, the supplied function will be called with the buffered data (array) as an argument. After the function has executed and the returning promise (if any) has been resolved, all buffered data will be piped downstream as well as all subsequent data.
+
+Prescan allows the user to make certain determinations from the incoming data before passing it down, such as inspecting data types across multiple rows.
+
+
+Example:
+
+```js
+// In this example we want to collect all columns for first 10 rows
+// of a 
+// to build a csv header row
+
+let headers = new Set();
+fs.createReadStream('data.json')
+  .pipe(etl.split()) // split on newline
+  .pipe(etl.map(d => JSON.parse(d)))  // parse each line as json
+  .pipe(etl.prescan(10,d => 
+    // build up headers from the first 10 lines
+    d.forEach(d => Object.keys(d).forEach(key => headers.add(key)))
+  ))
+  .pipe(etl.map(function(d) => {
+    this.firstline = this.firstline || this.push([...headers].join('.')+'\n');
+    headers.map(header => d[header]).join('.')+'\n'))
+  }))
+  .pipe(fs.createWriteStream('data.csv'))
+```
+
 <a name="expand" href="#expand">#</a> etl.<b>expand</b>([<i>convert</i>])
 
 Throughout the etl pipeline new packets are generated with incoming packets as prototypes (using `Object.create`).  This means that inherited values are not enumerable and will not show up in stringification by default (although they are available directly).  `etl.expand()` loops through all keys of an incoming packet and explicitly sets any inherited values as regular properties of the object

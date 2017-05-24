@@ -1,18 +1,14 @@
-var etl = require('../index'),
-    cluster = require('cluster'),
-    path = require('path'),
-    assert = require('assert');
+const etl = require('../index');
+const cluster = require('cluster');
+const path = require('path');
+const t = require('tap');
 
 cluster.setupMaster({
   exec : path.join(__dirname,'lib','worker.js')
 });
 
 
-describe('cluster',function() {
-  it('should schedule tasks',function() {
-    return etl.cluster.schedule([1,2,3,4,5],3)
-      .then(function(d) {
-        assert.equal(d,15);
-      });
-  });
+t.test('cluster', async t => {
+  const d = await etl.cluster.schedule([1,2,3,4,5],3);
+  t.equal(d,15,'should schedule tasks');
 });

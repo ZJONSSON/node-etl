@@ -1,26 +1,22 @@
-var etl = require('../index'),
-    assert = require('assert'),
-    path = require('path'),
-    os = require('os');
+const etl = require('../index');
+const path = require('path');
+const os = require('os');
+const t = require('tap');
 
+const filename = path.join(os.tmpdir(),Number(new Date())+'.txt');
 
-var filename = path.join(os.tmpdir(),Number(new Date())+'.txt');
-
-describe('toFile',function() {
-  it('streams into a file and notifies when done',function() {
-    return etl.toStream([1,2,[3,4]])
+t.test('toFile', {autoend:true}, t => {
+  t.test('piping into', async t => {
+    const d = await etl.toStream([1,2,[3,4]])
       .pipe(etl.stringify(0,null,true))
       .pipe(etl.toFile(filename))
       .promise();
+
+    t.same(d,[true],'returns true when done');
   });
 
-  it('can be read again',function() {
-    return etl.file(filename)
-      .promise()
-      .then(function(d) {
-        assert.equal(d[0].text,'1\n2\n[3,4]\n');
-      })
-  })
-
-    
+  t.test('reading file', async t => {
+    const d = await etl.file(filename).promise();
+    t.same(d[0].text,'1\n2\n[3,4]\n','verifies content');
+  });
 });

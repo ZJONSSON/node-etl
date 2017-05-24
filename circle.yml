@@ -12,3 +12,6 @@ dependencies:
     - sudo /etc/init.d/mongodb stop
     - sudo cp mongodb-linux-x86_64-2.6.6/bin/* /usr/bin
     - sudo /etc/init.d/mongodb start
+test:
+  post:
+    - mv coverage/lcov-report $CIRCLE_ARTIFACTS/coverage

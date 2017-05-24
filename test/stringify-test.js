@@ -1,38 +1,32 @@
-var etl = require('../index'),
-    assert = require('assert');
+const etl = require('../index');
+const t = require('tap');
 
-var data = [{a:1,b:'test1'},{a:2,b:'test2'}];
+const data = [
+  {a:1,b:'test1'},
+  {a:2,b:'test2'}
+];
 
 function dataStream() {
-  var s = etl.streamz();
-  data.forEach(s.write.bind(s));
+  const s = etl.streamz();
+  data.forEach(d => s.write(d));
   s.end();
   return s;
 }
 
-describe('stringify',function() {
-  it('pushes stringified object',function() {
-    var stringify = etl.stringify(),
-        expected = [ '{"a":1,"b":"test1"}', '{"a":2,"b":"test2"}' ];
+t.test('stringify', {autoend:true, jobs: 10}, t => {
+  t.test('etl.stringify()',async t => {
+    const stringify = etl.stringify();
+    const expected = [ '{"a":1,"b":"test1"}', '{"a":2,"b":"test2"}' ];
+    const d = await dataStream().pipe(stringify).promise();
 
-    return dataStream()
-      .pipe(stringify)
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,expected);
-      });
+    t.same(d,expected,'returns stringified object');
   });
 
-  it('provides optional indent',function() {
-    var stringify = etl.stringify(2),
-        expected = [ '{\n  "a": 1,\n  "b": "test1"\n}', '{\n  "a": 2,\n  "b": "test2"\n}' ];
+  t.test('etl.stringify(d)', async t => {
+    const stringify = etl.stringify(2);
+    const expected = [ '{\n  "a": 1,\n  "b": "test1"\n}', '{\n  "a": 2,\n  "b": "test2"\n}' ];
+    const d = await dataStream().pipe(stringify).promise();
 
-    return dataStream()
-      .pipe(stringify)
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,expected);
-      });
+    t.same(d,expected, 'returns indented object');
   });
-
 });

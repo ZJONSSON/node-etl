@@ -1,6 +1,6 @@
 {
   "name": "etl",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Collection of stream-based components that form an ETL pipeline",
   "main": "index.js",
   "author": "Ziggy Jonsson (http://github.com/zjonsson/)",
@@ -9,7 +9,7 @@
     "url": "http://github.com/ZJONSSON/node-etl"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "tap test --jobs=10 -Rspec --coverage-report=html --no-browser"
   },
   "license": "MIT",
   "dependencies": {
@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "elasticsearch": "~13.0.0",
-    "mocha": "~3.2.0",
+    "tap": "^10.3.2",
     "mongodb": "~2.2.27",
     "mysql": "~2.13.0",
     "pg": "~6.2.3",

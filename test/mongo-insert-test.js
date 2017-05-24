@@ -1,57 +1,59 @@
-var etl = require('../index'),
-    assert = require('assert'),
-    data = require('./data'),
-    mongo = require('./lib/mongo');
+const etl = require('../index');
+const data = require('./data');
+const mongo = require('./lib/mongo')();
+const t = require('tap');
 
-
-describe('mongo.insert',function() {
-  it('pipes data into mongo',function() {
-    return mongo.getCollection('insert')
-      .then(function(collection) {
-        var insert = etl.mongo.insert(collection,{pushResult:true});
+t.test('mongo.insert', async t => {
+  await mongo.db;
+  
+  t.test('piping data into mongo.insert',async t => {
+    const d = await mongo.getCollection('insert')
+      .then(collection => {
         return data.stream()
-          .pipe(insert)
+          .pipe(etl.mongo.insert(collection,{pushResult:true}))
           .promise();
-      })
-      .then(function(d) {
-        d.forEach(function(d) {
-          assert.deepEqual(d,{ok:1,n:1});
-        });
       });
+
+    d.forEach(d => t.same(d,{ok:1,n:1},'inserts each record'));
   });
 
-  it('results are saved',function() {
-    return mongo.getCollection('insert',true)
-      .then(function(collection) {
-        return collection.find({},{_id:false}).toArrayAsync();
-      })
-      .then(function(d) {
-        assert.deepEqual(d,data.data);
-      });
+  t.test('mongo collection',async t => {
+    const collection = await mongo.getCollection('insert',true);
+    const d = await collection.find({},{_id:false}).toArrayAsync();
+
+    t.same(d,data.data,'reveals data');
   });
 
-  it('pushResults == false and collection as promise',function() {
-    return mongo.getCollection('insert')
-      .then(function(collection) {
-        var insert = etl.mongo.insert(Promise.resolve(collection));
-        return data.stream()
-          .pipe(insert)
+  t.test('pushResults == false and collection as promise',async t => {
+    const d = await mongo.getCollection('insert')
+      .then(collection => {
+        return data.stream(etl.mongo.insert(Promise.resolve(collection)))
+          .pipe(etl.mongo.insert(Promise.resolve(collection)))
           .promise();
-      })
-      .then(function(d) {
-        assert.deepEqual(d,[]);
       });
+
+    t.same(d,[],'returns nothing');
   });
 
-  it('error in collection emits error',function() {
-    var collection = Promise.reject(new Error('CONNECTION_ERROR'));
-    return etl.toStream({test:true})
+  t.test('error in collection', async t => {
+    const collection = Promise.reject(new Error('CONNECTION_ERROR'));
+    const e = await etl.toStream({test:true})
       .pipe(etl.mongo.update(collection,'_id'))
       .promise()
-      .then(function() {
-        throw 'SHOULD_ERROR';
-      },function(e) {
-        assert.equal(e.message,'CONNECTION_ERROR');
-      });
+      .then(() => {throw 'SHOULD_ERROR';}, Object);
+
+    t.same(e.message,'CONNECTION_ERROR','should bubble down');
   });
-});
+})
+.then(
+  () => mongo.db.then( db => db.close()),
+  e => {
+    if (e.message.includes('ECONNREFUSED'))
+      console.warn('Warning: MongoDB server not available');
+    else
+      throw e;
+  }
+);
+
+
+  

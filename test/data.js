@@ -1,6 +1,6 @@
-var PassThrough = require('stream').PassThrough;
+const PassThrough = require('stream').PassThrough;
 
-var data = {
+const data = {
   data : [
     { text: 'Nathaniel Olson 52    1/10/2025',
       name: 'Nathaniel Olson',
@@ -43,8 +43,8 @@ data.copy = function() {
 };
 
 data.stream = function(options) {
-  var s = PassThrough({objectMode:true}),
-      data = this.copy();
+  const s = PassThrough({objectMode:true});
+  const data = this.copy();
 
   data.forEach(function(d,i) {
     setTimeout(function() {
@@ -57,7 +57,7 @@ data.stream = function(options) {
 };
 
 
-for (var key in data.data) 
+for (let key in data.data) 
   Object.freeze(data.data[key]);
 
 

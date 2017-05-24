@@ -1,208 +1,172 @@
-var etl = require('../index'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    data = require('./data'),
-    mongo = require('./lib/mongo');
+const etl = require('../index');
+const Promise = require('bluebird');
+const data = require('./data');
+const mongo = require('./lib/mongo')();
+const t = require('tap');
 
-describe('mongo update',function() {
+t.test('mongo update', {autoend: true}, t => {
 
-  describe('single record',function() {
-    var collection = mongo.getCollection('update-empty');
+  t.test('single record', {autoend: true}, async t => {
+    const collection = mongo.getCollection('update-empty');
 
-    it('missing keys fails',function() {
-      return Promise.try(function() {
-          return etl.mongo.update(collection);
-         })
-        .then(function() {
-          throw 'Should result in an error';
-        },Object);
+    t.test('missing keys',async t => {
+      const e = await Promise.try(() => etl.mongo.update(collection))
+        .then(() => { throw 'Should result in an error';},Object);
+      t.same(e.message,'Missing Keys','Errors');
     });
 
-    it('upserts into mongo',function() {
-      var insert = etl.mongo.update(collection,['__line'],{upsert: true, pushResult:true});
-      var data = etl.map();
+    t.test('upsert', async t => {
+      const insert = etl.mongo.update(collection,['__line'],{upsert: true, pushResult:true});
+      const data = etl.map();
       data.end({name:'single record',__line:999});
 
-      return data.pipe(insert)
-        .promise()
-        .then(function(d) {
-          d = d[0];
-          assert.equal(d.nUpserted,1);   
-        });
+      const d = await data.pipe(insert).promise();
+
+      t.same(d[0].nUpserted,1,'upserts one record');
     });
 
-    it('updates into mongo',function() {
-      var insert = etl.mongo.update(collection,['__line'],{pushResult:true});
-      var data = etl.map();
+    t.test('updates into mongo', async t => {
+      const insert = etl.mongo.update(collection,['__line'],{pushResult:true});
+      const data = etl.map();
       data.end({name:'updated single record',__line:999});
 
-      return data.pipe(insert) 
-        .promise()
-        .then(function(d) {
-          d = d[0];
-          if (d.nModified === null)
-              console.log('WARNING - Mongo 2.6 or higher needed for nModfied');
-          else
-            assert.equal(d.nModified,1);
-        });
+      const d = await data.pipe(insert).promise();
+
+      if (d[0].nModified === null)
+        t.pass('WARNING - Mongo 2.6 or higher needed for nModfied');
+      else
+        t.same(d[0].nModified,1);
     });
   });
 
-  describe('bulk',function() {
-    describe('on an empty collection',function() {
-      it('should fail to update',function() {
-        return mongo.getCollection('update-empty')
-          .then(function(collection) {
-            var update = etl.mongo.update(collection,['name'],{pushResult:true});
+  t.test('bulk', {autoend:true}, async t => {
+    const collection = await mongo.getCollection('update-empty');
 
-            return data.stream()
+    t.test('on an empty collection', async t => {
+      const update = etl.mongo.update(collection,['name'],{pushResult:true});
+
+      let d = await data.stream()
               .pipe(etl.collect(100))
               .pipe(update)
               .promise();
-          })
-          .then(function(d) {
-            d = d[0];
-            assert.equal(d.nInserted,0);
-            assert.equal(d.nUpserted,0);
-            assert.equal(d.nMatched,0);
-          });
-      });
+          
+      d = d[0];
+      t.same(d.nInserted,0,'inserts no records');
+      t.same(d.nUpserted,0,'upserts no records');
+      t.same(d.nMatched,0,'matched no records');
     });
 
-    describe('with pushresults == false',function() {
-      it('pushes nothing downstream',function() {
-        return mongo.getCollection('update-empty')
-          .then(function(collection) {
-            var update = etl.mongo.update(collection,['name']);
+    t.test('with pushresults == false',async t => {
+      const collection = await mongo.getCollection('update-empty');
+      const update = etl.mongo.update(collection,['name']);
 
-            return data.stream()
-              .pipe(update)
-              .promise();
-          })
-          .then(function(d) {
-            assert.deepEqual(d,[]);
-          });
-      });
+      const d = await data.stream()
+        .pipe(update)
+        .promise();
+    
+      t.same(d,[],'pushes nothing downstream');
     });
 
-    describe('on a populated collection',function() {
-      it('should update matches',function() {
-        return mongo.getCollection('update-populated',true)
-          .then(function(collection) {
-            return collection.insertAsync(data.copy())
-              .then(function() {
-                var update = etl.mongo.update(collection,['name'],{pushResult:true});
+    t.test('on a populated collection', {autoend: true}, async t => {
+      const collection = await mongo.getCollection('update-populated',true);
 
-                return data.stream()
-                  .pipe(etl.map(function(d) {
-                    if (d.name == 'Nathaniel Olson')
-                      d.name = 'Not Found';
-                    d.newfield='newfield';
-                    return d;
-                  }))
-                  .pipe(etl.collect(100))
-                  .pipe(update)
-                  .promise();
-              });
-          })
-          .then(function(d) {
-            d = d[0];
-            if (d.nModified === null)
-              console.log('WARNING - Mongo 2.6 or higher needed for nModfied');
-            else
-              assert.equal(d.nModified,2);
-            assert.equal(d.nInserted,0);
-          });
+      t.test('update', async t => {
+        await collection.insertAsync(data.copy());
+        const update = etl.mongo.update(collection,['name'],{pushResult:true});
+
+        let d = await data.stream()
+          .pipe(etl.map(function(d) {
+            if (d.name == 'Nathaniel Olson')
+              d.name = 'Not Found';
+            d.newfield='newfield';
+            return d;
+          }))
+          .pipe(etl.collect(100))
+          .pipe(update)
+          .promise();
+                
+        d = d[0];
+        if (d.nModified === null)
+          console.log('WARNING - Mongo 2.6 or higher needed for nModfied');
+        else {
+          t.same(d.nModified,2,'modified 2 records');
+          t.same(d.nInserted,0,'inserted zero records');
+        }
       });
 
-      it('results are saved',function() {
-        return mongo.getCollection('update-populated',true)
-          .then(function(collection) {
-            return collection.find({},{_id:false}).toArrayAsync();
-          })
-          .then(function(d) {
-            var expected = data.copy().map(function(d,i) {
-              if (i) d.newfield = 'newfield';
-              return d;
-            });
+      t.test('using find', async t => {
+        const collection = await  mongo.getCollection('update-populated',true);
+        const d = await collection.find({},{_id:false}).toArrayAsync();
 
-            assert.deepEqual(d,expected);            
-          });
-      });
-    });
-
-    describe('using upsert option',function() {
-      it('should populate',function() {
-        return mongo.getCollection('upsert')
-          .then(function(collection) {
-            var upsert = etl.mongo.update(collection,['name'],{pushResult:true,upsert:true});
-
-            return data.stream()
-              .pipe(etl.collect(100))
-              .pipe(upsert)
-              .promise();
-
-          })
-          .then(function(d) {
-            d = d[0];
-            assert.equal(d.nUpserted,3);
-            assert.equal(d.nMatched,0);
-         });
-      });
-
-      it('results are saved',function() {
-        return mongo.getCollection('upsert')
-          .then(function(collection) {
-            return collection.find({},{_id:false}).toArrayAsync();
-          })
-          .then(function(d) {
-            assert.deepEqual(d,data.data);
-          });
-      });
-    });
-
-    describe('using upsert function',function() {
-      it('should populate',function() {
-        return mongo.getCollection('upsert2')
-          .then(function(collection) {
-            var upsert = etl.mongo.upsert(collection,['name'],{pushResult:true});
-
-            return data.stream()
-              .pipe(etl.collect(100))
-              .pipe(upsert)
-              .promise();
-
-          })
-          .then(function(d) {
-            d = d[0];
-            assert.equal(d.nUpserted,3);
-            assert.equal(d.nMatched,0);
-         });
-      });
-
-      it('results are saved',function() {
-        return mongo.getCollection('upsert2')
-          .then(function(collection) {
-            return collection.find({},{_id:false}).toArrayAsync();
-          })
-          .then(function(d) {
-            assert.deepEqual(d,data.data);
-          });
-      });
-    });
-  });
-
-  describe('error in collection',function() {
-    it('emits error',function() {
-      var collection = Promise.reject(new Error('CONNECTION_ERROR'));
-      return etl.toStream({test:true})
-        .pipe(etl.mongo.update(collection,'_id'))
-        .promise()
-        .then(function() {
-          throw 'SHOULD_ERROR';
-        },function(e) {
-          assert.equal(e.message,'CONNECTION_ERROR');
+        const expected = data.copy().map(function(d,i) {
+          if (i) d.newfield = 'newfield';
+          return d;
         });
+
+        t.same(d,expected,'results were saved');
+      });
+    });
+
+    t.test('using upsert option', {autoend: true}, t => {
+      const collection = mongo.getCollection('upsert');
+
+      t.test('upsert', async t => {  
+        const upsert = etl.mongo.update(collection,['name'],{pushResult:true,upsert:true});
+        let d = await data.stream()
+          .pipe(etl.collect(100))
+          .pipe(upsert)
+          .promise();
+
+        d = d[0];
+        t.same(d.nUpserted,3,'3 updated');
+        t.same(d.nMatched,0, '0 matched');
+      });
+
+      t.test('find',async t => {
+        const collection = await mongo.getCollection('upsert');
+        const d = await collection.find({},{_id:false}).toArrayAsync();
+          
+        t.same(d,data.data,'results are saved');
+      });
+    });
+
+    t.test('using upsert function',{autoend: true}, async t => {
+      const collection = await mongo.getCollection('upsert2');
+
+      t.test('should populate', async t => {
+        const upsert = etl.mongo.upsert(collection,['name'],{pushResult:true});
+
+        let d = await data.stream()
+          .pipe(etl.collect(100))
+          .pipe(upsert)
+          .promise();
+
+        d = d[0];
+        t.same(d.nUpserted,3,'upserts 3 records');
+        t.same(d.nMatched,0,'matches 0 records');
+      });
+
+      t.test('find',async t =>  {
+        const d = await collection.find({},{_id:false}).toArrayAsync();
+          
+        t.same(d,data.data,'results are saved');
+      });
     });
   });
-});
+
+  t.test('error in collection',async t => {
+    const collection = Promise.reject(new Error('CONNECTION_ERROR'));
+    const e = await etl.toStream({test:true})
+      .pipe(etl.mongo.update(collection,'_id'))
+      .promise()
+      .then(() => { throw 'SHOULD_ERROR';}, Object);
+    t.same(e.message,'CONNECTION_ERROR','passes down');
+  });
+})
+.catch(e => {
+  if (e.message.includes('ECONNREFUSED'))
+    console.warn('Warning: MongoDB server not available');
+  else
+    console.warn(e.message);
+})
+.then(() => mongo.db.then( db => db.close()));

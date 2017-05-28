@@ -1,46 +1,39 @@
-var etl = require('../index'),
-    assert = require('assert'),
-    Promise = require('bluebird');
+const etl = require('../index');
+const Promise = require('bluebird');
+const t = require('tap');
 
-describe('keepOpen',function() {
-  it('stays open after end as long as data arrives before timeout',function() {
-    var p = etl.keepOpen(500);
-
-    return etl.toStream([1,999,[3,4]])
+t.test('keepOpen', {autoend: true, jobs: 10}, t => {
+  t.test('after end',async t => {
+    const p = etl.keepOpen(500);
+    const d = await etl.toStream([1,999,[3,4]])
       .pipe(p)
-      .pipe(etl.map(function(d) {
+      .pipe(etl.map(d => {
         if (d === 999)
           Promise.delay(200)
-           .then(p.write.bind(p,2));
+           .then(() => p.write(2));
         else
           return d;
       }))
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,[1,[3,4],2]);
-      });
+      .promise();
+
+    t.same(d,[1,[3,4],2],'stays open as long as data arrives before timeout');
   });
 
-  it('errors `write after end` if data arrives after timeout',function() {
-    var p = etl.keepOpen(100);
+  t.test('data arrives after timeout', async t => {
+    const p = etl.keepOpen(100);
 
-    return etl.toStream([1,undefined,[3,4]])
+    const e = await etl.toStream([1,undefined,[3,4]])
       .pipe(p)
-      .pipe(etl.map(function(d) {
+      .pipe(etl.map(d => {
         if (d === undefined)
           return Promise.delay(1000)
            .then(p.write.bind(p,2));
-          
         else
           return d;
       }))
       .promise()
-      .then(function() {
-        throw 'Should Error';
-      },function(e) {
-        assert(e.message === 'stream.push() after EOF' || e.message === 'write after end',e.message);
-      });
-  });
+      .then(function() { throw 'Should Error'; },Object);
 
-  
+    t.ok(e.message === 'stream.push() after EOF' || e.message === 'write after end','should error');
+  });  
 });

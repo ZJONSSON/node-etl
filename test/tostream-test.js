@@ -1,113 +1,78 @@
-var etl = require('../index'),
-    assert = require('assert');
+const etl = require('../index');
+const t = require('tap');
 
-describe('toStream',function() {
-  describe('static data',function() {
-    it('streams supplied data',function() {
-      return etl.toStream([1,2,[3,4]])
-        .pipe(etl.map(function(d) {
-          return [d];
-        }))
-        .promise()
-        .then(function(d) {
-          assert.deepEqual(d,[[1],[2],[[3,4]]]);
-        });
+t.test('toStream', {autoend:true, jobs: 10}, t => {
+  t.test('static data',t => {
+    t.test('array',async t => {
+      const d = await etl.toStream([1,2,[3,4]]).pipe(etl.map(d => [d])).promise();
+      t.same(d,[[1],[2],[[3,4]]],'streams elements');
     });
 
-    it('no data returns empty stream',function() {
-      return etl.toStream()
-        .promise()
-        .then(function(d) {
-          assert.deepEqual(d,[]);
-        });
+    t.test('no data',async t => {
+      const d = await etl.toStream().promise();
+      t.same(d,[],'returns empty stream');
     });
+
+    t.end();
   });
 
-  describe('function input',function() {
-    it('streams the function results',function() {
-      return etl.toStream(function() {
-        return([1,2,[3,4]]);
-      })
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,[1,2,[3,4]]);
-      });
+  t.test('function input', t => {
+    t.test('returning an array',async t => {
+      const d = await etl.toStream(() => [1,2,[3,4]]).promise();
+      t.same(d,[1,2,[3,4]],'streams the array');
     });
 
-    it('streams `this.push` and function results',function() {
-      return etl.toStream(function() {
+    t.test('`this.push` and function results', async t => {
+      const d = await etl.toStream(function() {
         this.push(1);
         this.push(2);
-        return [[3,4]]
-      })
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,[1,2,[3,4]]);
-      });
+        return [[3,4]];
+      }).promise();
+
+      t.same(d,[1,2,[3,4]],'streams combined data');
     });
 
-    it('no data returns empty stream',function() {
-      return etl.toStream(function() {
-      })
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,[]);
-      });
+    t.test('undefined return', async t => {
+      const d = await etl.toStream(function() {}).promise();
+      t.same(d,[],'returns empty stream');
     });
+
+    t.end();
   });
 
-  describe('promise input',function() {
-    it('streams the resolved values',function() {
-      return etl.toStream(Promise.resolve([1,2,[3,4]]))
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,[1,2,[3,4]]);
-      });
+  t.test('promise input', t => {
+    t.test('resolving to an array', async t => {
+      const d = await etl.toStream(Promise.resolve([1,2,[3,4]])).promise();
+      t.same(d,[1,2,[3,4]],'streams elements');
     });
 
-    it('no data returns empty stream',function() {
-      return etl.toStream(Promise.resolve())
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,[]);
-      });
+    t.test('resolving to undefined', async t => {
+      const d = await etl.toStream(Promise.resolve()).promise();
+      t.same(d,[],'returns empty stream');
     });
+
+    t.end();
   });
 
-   describe('function returning a stream input',function() {
-    it('streams the resolved values',function() {
-      return etl.toStream(function() {
-        return etl.toStream([1,2,[3,4]]);
-      })
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,[1,2,[3,4]]);
-      });
+  t.test('function returning a stream', t => {
+    t.test('with data', async t => {
+      const d = await etl.toStream(() => etl.toStream([1,2,[3,4]])).promise();
+      t.same(d,[1,2,[3,4]],'returns data');
     });
 
-    it('no data returns empty stream',function() {
-      return etl.toStream(function() {
-        return etl.toStream();
-      })
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,[]);
-      });
+    t.test('with no data', async t => {
+      const d = await etl.toStream(() => etl.toStream()).promise();
+      t.same(d,[],'returns empty stream');
     });
+
+    t.end();
   });
 
-  describe('error in the function ',function() {
-    it('is passed downstream',function() {
-      return etl.toStream(function() {
-        throw 'ERROR';
-      })
+  t.test('error in the function ', async t =>  {
+    const e = await etl.toStream(() => { throw 'ERROR'; })
       .promise()
-      .then(function() {
-        throw 'SHOULD_ERROR';
-      },function(e) {
-        assert.equal(e,'ERROR');
-      });
-    });
+      .then(() => { throw 'SHOULD_ERROR';}, String);
+    
+    t.same(e,'ERROR','is passed downstream');
   });
-
 });

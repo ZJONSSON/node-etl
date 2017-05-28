@@ -1,39 +1,31 @@
-var etl = require('../index'),
-    assert = require('assert'),
-    data = require('./data');
+const etl = require('../index');
+const data = require('./data');
+const t = require('tap');
 
-describe('fixed layout',function() {
-  describe('defined as object',function() {
-    it('splits incoming data into columns',function() {
-      var fixed = etl.fixed(data.layout);
+t.test('fixed layout',{autoend: true, jobs: 10}, t => {
+  t.test('defined as object', async t => {
+    const d = await data.stream()
+      .pipe(etl.fixed(data.layout))
+      .pipe(etl.expand())
+      .promise();
 
-      return data.stream()
-        .pipe(fixed)
-        .pipe(etl.expand())
-        .promise()
-        .then(function(d) {
-          assert.deepEqual(d,data.data);
-        });
-    });
+    t.same(d,data.data,'splits incoming data into columns');
   });
-  describe('defined as an array',function() {
-    it('splits infomcing data into columns',function() {
-      var layout = Object.keys(data.layout).map(function(key) {
-        var val = data.layout[key];
-        if (!isNaN(val)) val = {length:val};
-        val.field = key;
-        return val;
-      });
+  
 
-      var fixed = etl.fixed(layout);
-
-      return data.stream()
-        .pipe(fixed)
-        .pipe(etl.expand())
-        .promise()
-        .then(function(d) {
-          assert.deepEqual(d,data.data);
-        });
+  t.test('defined as an array', async t => {
+    const layout = Object.keys(data.layout).map(key => {
+      let val = data.layout[key];
+      if (!isNaN(val)) val = {length:val};
+      val.field = key;
+      return val;
     });
-  });
+
+    const d = await data.stream()
+      .pipe(etl.fixed(layout))
+      .pipe(etl.expand())
+      .promise();
+      
+    t.same(d,data.data,'splits inc;oming data into columns');
+  });  
 });

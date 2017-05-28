@@ -6,7 +6,7 @@ var Promise = require('bluebird'),
 Promise.promisifyAll(mongo);
 Promise.promisifyAll(mongo.MongoClient);
 
-module.exports = {
+module.exports = () => ({
   db : mongo.connectAsync('mongodb://localhost:27017/etl_tests'),
 
   getCollection : function(name) {
@@ -38,5 +38,5 @@ module.exports = {
         });
       });
   }
-};
+});
 

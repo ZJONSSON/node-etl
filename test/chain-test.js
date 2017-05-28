@@ -1,94 +1,61 @@
-var etl = require('../index'),
-    PassThrough = require('stream').PassThrough,
-    assert = require('assert');
+const etl = require('../index');
+const dataStream = require('./lib/dataStream');
+const t = require('tap');
 
-var data = [1,2,3,4,5,6,7,8,9,10,11];
+const data = [1,2,3,4,5,6,7,8,9,10,11];
 
-var expected = [
-    [1,2,3],
-    [4,5,6],
-    [7,8,9],
-    [10,11]
-  ];
+const expected = [
+  [1,2,3],
+  [4,5,6],
+  [7,8,9],
+  [10,11]
+];
 
-function dataStream() {
-  var s = PassThrough({objectMode:true});
-  data.forEach(function(d,i) {
-    setTimeout(function() {
-      s.write(d);
-      if (i == data.length-1)
-        s.end();
-    });
-  });
-  return s;
-}
-  
-describe('chain',function() {
-  it('works when returning a stream',function() {
+t.test('chain', {autoend: true}, t => {
 
-    return dataStream()
-      .pipe(etl.chain(function(stream) {
-        return stream
-          .pipe(etl.collect(3));
-      }))
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,expected);
-      });
+  t.test('returning a stream', async t => {
+    const d = await dataStream(data)
+      .pipe(etl.chain(stream => stream.pipe(etl.collect(3))))
+      .promise();
+
+    t.same(d,expected,'returning stream is piped down');
   });
 
-   it('works using the second argument as outstream',function() {
+  t.test('using the second argument as outstream',async t => {
+    const d = await dataStream(data)
+      .pipe(etl.chain((stream,out) =>
+        stream.pipe(etl.collect(3)).pipe(out)
+      ))
+      .promise();
 
-    return dataStream()
-      .pipe(etl.chain(function(stream,out) {
+    t.same(d,expected,'outstream is piped down');
+  });
+
+  t.test('returning a promise', async t => {
+    const d = await dataStream(data)
+      .pipe(etl.chain(stream =>
         stream
           .pipe(etl.collect(3))
-          .pipe(out);
-      }))
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,expected);
-      });
+          .promise()
+      ))
+      .promise();
+    t.same(d,expected,'pipes down promise results');
   });
 
+  t.test('errors in subchain',async t => {
+    const chain = etl.map();
+    setTimeout( () => chain.end('test'));
 
-   it('works when returning a promise',function() {
-
-    return dataStream()
-      .pipe(etl.chain(function(stream) {
-        return stream
-          .pipe(etl.collect(3))
-          .promise();
-      }))
-      .promise()
-      .then(function(d) {
-        assert.deepEqual(d,expected);
-      });
-  });
-
-
-  it('bubbles errors in subchain',function() {
-
-    var chain = etl.map();
-
-    setTimeout(function() {
-      chain.end('test');
-    });
-
-    return chain
+    const e = await chain
       .pipe(etl.map())
-      .pipe(etl.chain(function(stream) {
-        return stream
-          .pipe(etl.map(function() {
-            throw 'ERROR';
-          }))
-          .pipe(etl.collect(3));
-      }))
+      .pipe(etl.chain(stream =>
+        stream
+          .pipe(etl.map(() => { throw 'ERROR';}))
+          .pipe(etl.collect(3))
+      ))
       .promise()
-      .then(function() {
-        throw 'Should error';
-      },function(e) {
-        assert.equal(e,'ERROR');
-      });
+      .then(() => { throw 'Should error';},String);
+
+    t.same(e,'ERROR','bubble down');
   });
 });

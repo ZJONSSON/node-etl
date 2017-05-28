@@ -1,50 +1,29 @@
-var etl = require('../index'),
-    assert = require('assert'),
-    Promise = require('bluebird');
+const Promise = require('bluebird');
+const etl = require('../index');
+const t = require('tap');
 
-describe('timeout',function() {
-  describe('with no delay',function() {
-    var timeout = etl.timeout(100);
+t.test('timeout', {autoend:true, jobs: 10}, t => {
+  t.test('with no delay', async t => {
+    const timeout = etl.timeout(100);
+    const d = await etl.toStream([1,2,3,4])
+      .pipe(etl.map(d => Promise.delay(30,d)))
+      .pipe(timeout)
+      .promise();
 
-    it('doesnt emit timeout',function() {
-      return etl.toStream([1,2,3,4])
-      .pipe(etl.map(function(d) {
-        return Promise.delay(30,d);
-      }))
+    t.same(d,[1,2,3,4],'results are as expected');
+    t.same(timeout.interval._idleTimeout,-1,'cleans up setInterval');
+  });
+    
+  t.test('with a triggering delay',async t => {
+    const timeout = etl.timeout(100);   
+    const e = await etl.toStream([1,2,3,4])
+      // Delay by 250ms when we see '4'
+      .pipe(etl.map(d => Promise.delay(d === 4 ? 250 : 30,d)))
       .pipe(timeout)
       .promise()
-      .then(function(d) {
-        assert.deepEqual(d,[1,2,3,4]);
-      });
-    });
+      .then(() => { throw 'SHOULD_ERROR'; }, String);
 
-    it('cleans up the setInterval',function() {
-      assert.equal(timeout.interval._idleTimeout,-1);
-    });
-
-  });
-
-  describe('with a triggering delay',function() {
-    var timeout = etl.timeout(100);
-
-    it('emits timeout when delayed',function() {
-      return etl.toStream([1,2,3,4])
-        .pipe(etl.map(function(d) {
-          // Delay by 250ms when we see '4'
-          return Promise.delay(d === 4 ? 250 : 30,d);
-        }))
-        .pipe(timeout)
-        .promise()
-        .then(function() {
-          throw 'SHOULD_ERROR';
-        },function(e) {
-          assert.equal(e,'ETL_TIMEOUT');
-        });
-    });
-
-    it('cleans up the setInterval',function() {
-      assert.equal(timeout.interval._idleTimeout,-1);
-    });
-
+    t.same(e,'ETL_TIMEOUT','emits timeout');
+    t.same(timeout.interval._idleTimeout,-1,'cleans up setInterval');
   });
 });

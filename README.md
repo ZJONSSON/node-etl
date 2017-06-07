@@ -15,7 +15,7 @@ fs.createReadStream('scores.csv')
     d._id = d.person_id;
     d.date = new Date(d.date);
     return d;
-  })
+  }))
   // collect 1000 records at a time for bulk-insert
   .pipe(etl.collect(1000))  
   // upsert records to elastic with max 10 concurrent server requests

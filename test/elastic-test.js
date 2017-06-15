@@ -22,10 +22,11 @@ t.test('elastic', {autoend:true}, async t => {
 
   t.test('#getMeta', t => {
     const bulk = etl.elastic.bulk('index', {});
-    const d = {_id: '1', parent: 'testparent', _index: 'testindex', _type: 'testtype'};
+    const d = {_id: '1', parent: 'testparent', routing: 'testrouting', _index: 'testindex', _type: 'testtype'};
     const metaData = bulk.getMeta(d);
     t.ok(metaData.hasOwnProperty('index'),'returns Object with key "index"');
     t.same(metaData.index.parent,'testparent','includes parent=testparent');
+    t.same(metaData.index.routing,'testrouting','includes routing=testrouting');
     t.same(metaData.index._id,'1','includes _id=1');
     t.same(metaData.index._type,'testtype','includes type=testtype');
     t.same(metaData.index._index,'testindex','includes index=testindex');

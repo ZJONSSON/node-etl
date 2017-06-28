@@ -5,6 +5,7 @@ const t = require('tap');
 t.test('fixed layout',{autoend: true, jobs: 10}, t => {
   t.test('defined as object', async t => {
     const d = await data.stream()
+      .pipe(etl.map(d => ({text: d.text, __filename: d.__filename})))
       .pipe(etl.fixed(data.layout))
       .pipe(etl.expand())
       .promise();
@@ -22,6 +23,7 @@ t.test('fixed layout',{autoend: true, jobs: 10}, t => {
     });
 
     const d = await data.stream()
+      .pipe(etl.map(d => ({text: d.text, __filename: d.__filename})))
       .pipe(etl.fixed(layout))
       .pipe(etl.expand())
       .promise();

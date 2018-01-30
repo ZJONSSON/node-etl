@@ -1,3 +1,17 @@
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
+[![Test Coverage][circle-image]][circle-url]
+[![Coverage][coverage-image]][coverage-url]
+
+[npm-image]: https://img.shields.io/npm/v/etl.svg
+[npm-url]: https://npmjs.org/package/etl
+[circle-image]: https://circleci.com/gh/ZJONSSON/node-etl.png?style=shield
+[circle-url]: https://circleci.com/gh/ZJONSSON/node-etl/tree/master
+[downloads-image]: https://img.shields.io/npm/dm/etl.svg
+[downloads-url]: https://npmjs.org/package/etl
+[coverage-image]: https://3tjjj5abqi.execute-api.us-east-1.amazonaws.com/prod/node-etl/badge
+[coverage-url]: https://3tjjj5abqi.execute-api.us-east-1.amazonaws.com/prod/node-etl/url
+
 ETL is a collection of stream based components that can be piped together to form a complete ETL pipeline with buffering, bulk-inserts and concurrent database streams. See the `test` directory for live examples.
 
 ```

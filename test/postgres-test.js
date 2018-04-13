@@ -42,12 +42,12 @@ t.test('postgres', async t => {
     }))
     .sort((a,b) => a.age - b.age);
 
-    const d = await p.query('SELECT * from test order by age');
+    const d = await p.query('SELECT * from circle_test_schema.test order by age');
     t.same(d.rows,expected,'records verified');
   });
 
   t.test('streaming', async t => {
-    const d = await p.stream(new QueryStream('select * from test'))
+    const d = await p.stream(new QueryStream('select * from circle_test_schema.test'))
       .pipe(etl.map())
       .promise();
 

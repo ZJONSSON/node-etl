@@ -13,22 +13,22 @@ const pool = new pg.Pool({
 
 const p = etl.postgres.execute(pool);
 
-const before = p.query('CREATE SCHEMA circle_test')
+const before = p.query('CREATE SCHEMA circle_test_schema')
   .catch(Object)
-  .then(() => p.query('DROP TABLE IF EXISTS test;'))  
+  .then(() => p.query('DROP TABLE IF EXISTS circle_test_schema.test;'))
   .then(()  => p.query(
-    'CREATE TABLE test ('+
+    'CREATE TABLE circle_test_schema.test ('+
     'name varchar(45),'+
     'age integer,'+
     'dt date '+
     ')'
   ));
- 
+
 t.test('postgres', async t => {
   await before;
   t.test('inserts', async t => {
     const d = await data.stream()
-      .pipe(etl.postgres.upsert(pool,'circle_test','test',{pushResult:true}))
+      .pipe(etl.postgres.upsert(pool,'circle_test_schema','test',{pushResult:true}))
       .promise();
 
     t.same(d.length,3,'returns correct length');
@@ -42,12 +42,12 @@ t.test('postgres', async t => {
     }))
     .sort((a,b) => a.age - b.age);
 
-    const d = await p.query('SELECT * from test order by age');
+    const d = await p.query('SELECT * from circle_test_schema.test order by age');
     t.same(d.rows,expected,'records verified');
   });
 
   t.test('streaming', async t => {
-    const d = await p.stream(new QueryStream('select * from test'))
+    const d = await p.stream(new QueryStream('select * from circle_test_schema.test'))
       .pipe(etl.map())
       .promise();
 

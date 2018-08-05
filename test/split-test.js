@@ -52,3 +52,11 @@ t.test('split(\'a\')', async t => {
   const d = await split.pipe(etl.expand()).promise();
   t.same(d,expected,'splits on a');
 });
+
+t.test('etl.split empty', async t => {
+  const p = etl.map();
+  p.end();
+
+  const data = await p.pipe(etl.split()).promise();
+  t.same(data,[]);
+});

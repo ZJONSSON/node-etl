@@ -47,6 +47,7 @@ fs.createReadStream('scores.csv')
   * [Mysql](#mysql)
   * [Postgres](#postgres)
   * [Elasticsearch](#elasticsearch)
+  * [BigQuery](#bigquery)
 * [Utilities](#utilities)
 
 ### Parsers 
@@ -418,6 +419,25 @@ etl.elastic.scroll(esClient,{index: 'index.a', size: 5000})
 ```
 
 If `custom` action is selected, each packet must be the raw metadata to be sent to elasticsearch with the optional second line stored in property `body`
+
+#### BigQuery
+
+<a name="bigquery" href="#bigquery">#</a> etl.bigquery.<b>insert</b>(<i>table</i>, [,<i>options</i>])
+
+Bulk insert data into BigQuery. This function first downloads the field names for the table and then inserts the matching columns from the incoming data.  The first variable needs to be an instance of the BigQuery table class.  Options can specify the concurrency (i.e. how many concurrent insert connections are allowed);
+
+example:
+
+```js
+const {BigQuery} = require('@google-cloud/bigquery');
+const bigquery = new BigQuery(config);
+const dataset = bigquery.dataset('my_dataset');
+const table = dataset.table('my_table');
+
+ etl.file('test.csv')
+  .pipe(etl.collect(100))  // send 100 rows in each packet
+  .pipe(etl.bigquery.insert(table, {concurrency: 5}));
+```
 
 
 ### Cluster

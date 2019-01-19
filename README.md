@@ -496,3 +496,11 @@ etl.toStream([1,2,3,4,5])
 <a name="keepopen" href="#keepopen">#</a> etl.<b>keepOpen</b>(<i>[timeout]</i>)
 
 `etl.keepOpen([timeout])` is a passthrough component that stays open after receiving an `end` only to finally close down when no data has passed through for a period of `[timeout]`.  This can be useful for any pipelines where data from lower part of the pipeline is pushed back higher for reprocessing (for example when encountering version conflicts of database documents) - as it will avoid `write after end` error.   The default timeout is 1000ms
+
+## Testing
+
+Testing environment is provided using docker-compose.  Start all services as follows:
+```
+docker-compose -p etl up
+```
+and then run `npm test` or go directly into the container (`docker exec -it etl_runner_1 bash`) and run individual tests manually 

@@ -1,17 +1,12 @@
-machine:
-  node:
-    version: 7
-  services:
-    - elasticsearch
-dependencies:
-  # Setup mongodb 2.6.6 on the test instance; Circle defaults to v2.4.x which is missing some features we utilize.
-  cache_directories:
-    - mongodb-linux-x86_64-2.6.6
-  pre:
-    - if [[ ! -d mongodb-linux-x86_64-2.6.6 ]]; then wget http://downloads.mongodb.org/linux/mongodb-linux-x86_64-2.6.6.tgz && tar xvzf mongodb-linux-x86_64-2.6.6.tgz; fi
-    - sudo /etc/init.d/mongodb stop
-    - sudo cp mongodb-linux-x86_64-2.6.6/bin/* /usr/bin
-    - sudo /etc/init.d/mongodb start
-test:
-  post:
-    - mv coverage/lcov-report $CIRCLE_ARTIFACTS/coverage
+version: 2 # CircleCI version
+jobs:
+  build:
+    machine: true # Use a Linux VM instead of docker environment
+    working_directory:  ~/node-etl # Default working directory, where your project will be cloned
+    steps:
+      - checkout
+      - run: docker-compose -p etl up -d
+      - run: npm install
+      - run: npm test
+      - store_artifacts:
+          path: coverage/lcov-report

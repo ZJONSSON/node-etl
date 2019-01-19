@@ -7,7 +7,7 @@ Promise.promisifyAll(mongo);
 Promise.promisifyAll(mongo.MongoClient);
 
 module.exports = () => ({
-  db : mongo.connectAsync('mongodb://localhost:27017/etl_tests'),
+  db : mongo.connectAsync('mongodb://mongodb:27017/etl_tests'),
 
   getCollection : function(name) {
     var self = this,collection;

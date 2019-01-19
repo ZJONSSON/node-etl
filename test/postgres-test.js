@@ -5,10 +5,11 @@ const QueryStream = require('pg-query-stream');
 const t = require('tap');
 
 const pool = new pg.Pool({
-  host: 'localhost',
+  host: 'postgres',
   port: 5432,
-  database: 'circle_test',
-  user: 'ubuntu'
+  database: 'postgres',
+  user: 'postgres',
+  password: 'example'
 });
 
 const p = etl.postgres.execute(pool);

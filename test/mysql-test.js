@@ -4,14 +4,17 @@ const data = require('./data');
 const t = require('tap');
 
 const pool = mysql.createPool({
-  host: 'localhost',
+  host: 'mysql',
   connectionLimit : 10,
-  user: 'ubuntu'
+  user: 'root',
+  password: 'example'
 });
 
 const p = etl.mysql.execute(pool);
 
 const before = async function() {
+  await p.query('DROP DATABASE IF EXISTS circle_test');
+  await p.query('CREATE DATABASE circle_test');
   await p.query('DROP TABLE IF EXISTS circle_test.test;');
   await p.query(
     'CREATE TABLE circle_test.test ('+

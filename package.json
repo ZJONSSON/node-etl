@@ -9,7 +9,7 @@
     "url": "http://github.com/ZJONSSON/node-etl"
   },
   "scripts": {
-    "test": "tap test --jobs=10 -Rspec --coverage-report=html --no-browser"
+    "test": "docker exec -it etl_runner_1 bash ./test.sh"
   },
   "license": "MIT",
   "dependencies": {

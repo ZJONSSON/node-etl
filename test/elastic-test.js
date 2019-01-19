@@ -5,7 +5,7 @@ const elasticsearch = require('elasticsearch');
 const t = require('tap');
 
 const client = new elasticsearch.Client({
-  host: 'localhost:9200'
+  host: 'elasticsearch:9200'
 });
 
 function convertHits(d) {

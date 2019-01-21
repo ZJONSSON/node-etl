@@ -6,7 +6,6 @@ jobs:
     steps:
       - checkout
       - run: docker-compose -p etl up -d
-      - run: npm install
       - run: npm test
       - store_artifacts:
           path: coverage/lcov-report

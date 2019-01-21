@@ -23,10 +23,15 @@ services:
     working_dir: /usr/src/app
     volumes:
      - .:/usr/src/app
+     - ./.docker_node_modules:/usr/src/app/node_modules:Z
     command: sh -c 'tail -f /dev/null'
 
   mongodb:
     image: 'mongo:3.2.17'
+    ports:
+      - "27017:27017"
+    expose:
+      - 27017
 
   mysql:
     image: mysql

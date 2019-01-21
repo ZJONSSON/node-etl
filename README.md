@@ -499,8 +499,8 @@ etl.toStream([1,2,3,4,5])
 
 ## Testing
 
-Testing environment is provided using docker-compose.  Start all services as follows:
-```
-docker-compose -p etl up
-```
-and then run `npm test` or go directly into the container (`docker exec -it etl_runner_1 bash`) and run individual tests manually 
+Testing environment is provided using docker-compose.  
+
+`npm test` starts docker-compose (if not already running) and executes the test suite.
+
+You can run individual tests from the docker directly.  To enter the docker type `npm run docker`

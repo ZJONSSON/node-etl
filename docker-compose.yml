@@ -25,13 +25,18 @@ services:
      - .:/usr/src/app
      - ./.docker_node_modules:/usr/src/app/node_modules:Z
     command: sh -c 'tail -f /dev/null'
+    ports:
+      - "9229:9229"
+    expose:
+      - 9229
+    networks:
+      etl-network:
+        ipv4_address: 173.23.0.100
 
   mongodb:
     image: 'mongo:3.2.17'
-    ports:
-      - "27017:27017"
-    expose:
-      - 27017
+    networks:
+      - etl-network
 
   mysql:
     image: mysql
@@ -39,13 +44,25 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: example
+    networks:
+      - etl-network
 
   postgres:
     image: postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: example
+    networks:
+      - etl-network
 
   elasticsearch:
     image: elasticsearch:6.4.1
     environment: ['http.host=0.0.0.0', 'transport.host=127.0.0.1']
+    networks:
+      - etl-network
+
+networks:
+  etl-network:
+    ipam:
+     config:
+       - subnet: 173.23.0.0/16

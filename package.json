@@ -1,6 +1,6 @@
 {
   "name": "etl",
-  "version": "0.5.16",
+  "version": "0.5.17",
   "description": "Collection of stream-based components that form an ETL pipeline",
   "main": "index.js",
   "author": "Ziggy Jonsson (http://github.com/zjonsson/)",
@@ -9,7 +9,8 @@
     "url": "http://github.com/ZJONSSON/node-etl"
   },
   "scripts": {
-    "test": "docker exec -it etl_runner_1 bash ./test.sh"
+    "test": "docker-compose -p etl up -d --no-recreate;docker exec -it etl_runner_1 bash ./test.sh",
+    "docker": "docker-compose -p etl up -d --no-recreate;docker exec -it etl_runner_1 bash"
   },
   "license": "MIT",
   "dependencies": {

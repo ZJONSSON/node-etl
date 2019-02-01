@@ -1,3 +1,4 @@
+npm install
 wait-for-it elasticsearch:9200
 wait-for-it mongodb:27017
 wait-for-it mysql:3306

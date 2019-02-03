@@ -13,11 +13,11 @@ const pool = mysql.createPool({
 const p = etl.mysql.execute(pool);
 
 const before = async function() {
-  await p.query('DROP DATABASE IF EXISTS circle_test');
-  await p.query('CREATE DATABASE circle_test');
-  await p.query('DROP TABLE IF EXISTS circle_test.test;');
+  await p.query('DROP DATABASE IF EXISTS `circle_test-1`');
+  await p.query('CREATE DATABASE `circle_test-1`');
+  await p.query('DROP TABLE IF EXISTS `circle_test-1`.`test-2`;');
   await p.query(
-    'CREATE TABLE circle_test.test ('+
+    'CREATE TABLE `circle_test-1`.`test-2` ('+
     'name varchar(45) DEFAULT NULL,'+
     'age int(11) DEFAULT NULL,'+
     'dt datetime DEFAULT NULL '+
@@ -30,14 +30,14 @@ t.test('mysql', {timeout: 20000, autoend:true}, async function(t) {
 
   t.test('inserts', async function(t) {
     const d = await data.stream()
-      .pipe(etl.mysql.upsert(pool,'circle_test','test',{pushResult:true}))
+      .pipe(etl.mysql.upsert(pool,'circle_test-1','test-2',{pushResult:true}))
       .promise();
 
     t.same(d[0].affectedRows,3,'returns right length');
   });
 
   t.test('selecting back',async function(t){
-    const d = await p.query('SELECT * from circle_test.test');
+    const d = await p.query('SELECT * from `circle_test-1`.`test-2`');
 
     t.same(d,data.data.map(d => ({
       name : d.name,
@@ -47,7 +47,7 @@ t.test('mysql', {timeout: 20000, autoend:true}, async function(t) {
   });
 
   t.test('streaming works',async function(t) {
-    const d = await p.stream('select * from circle_test.test').promise();
+    const d = await p.stream('select * from `circle_test-1`.`test-2`').promise();
     t.same(d.length,3);
   });
 

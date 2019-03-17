@@ -1,6 +1,6 @@
 {
   "name": "etl",
-  "version": "0.5.19",
+  "version": "0.5.20",
   "description": "Collection of stream-based components that form an ETL pipeline",
   "main": "index.js",
   "author": "Ziggy Jonsson (http://github.com/zjonsson/)",

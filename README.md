@@ -76,7 +76,12 @@ etl.file('test.csv')
 
 <a name="fixed" href="#fixed">#</a> etl.<b>fixed</b>(<i>layout</i>)
 
-Parses incoming text into objects using a fixed width layout.   The layout should be an object where each key is a field name that should be parsed, containing an object with `start`, `end` and/or `length`.  Alternatively each key can just have a number, which will be deemed to be `length`.   If a key contains a `transform` function, it will be applied to the parsed value of that key.  The layout can also be supplied as an array where instead of an object key the fieldname is defined using property `field` in each element.
+Parses incoming text into objects using a fixed width layout.   The layout should be an object where each key is a field name that should be parsed, containing an object with `start`, `end` and/or `length`.  Alternatively each key can just have a number, which will be deemed to be `length`. 
+
+If a key contains a `transform` function, it will be applied to the parsed value of that key. 
+
+
+The layout can also be supplied as an array where instead of an object key the fieldname is defined using property `field` in each element.
 
 The length of a single record will be determined by the highest `end` or `start+length` position.
 
@@ -98,6 +103,22 @@ var layout = {
 etl.file('test.txt')
   .pipe(etl.fixed(layout))
   .pipe(...)
+```
+
+If needed, you can get the current line as param in the transform function.
+
+```js
+
+var layout = {
+  firstCol: {
+    start: 0, end: 10,
+    transform: function (value, line) {      
+      console.log(`firstCol on line ${line} is: ${value}`); // firstCol on line 1 is: test
+      return value;
+    }
+  }
+}
+
 ```
 
 ### Transforms

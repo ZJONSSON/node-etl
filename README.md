@@ -407,6 +407,8 @@ Transmit incoming packets to elasticsearch, setting the appropriate meta-data de
 
 The results are not pushed downstream unless `pushResults` is defined in the options. The body of the incoming data is included in the results, allowing for easy resubmission upon version conflicts. By defining option `pushErrors` as `true` only errors will be pushed downstream.  Maximum number of concurrent connections can be defined as option `concurrency`.  If `maxRetries` is defined in options, an error response from the server will result in retries up to the specified limit - after a wait of `retryDelay` or 30 seconds.  This can be useful for long-running upsert operations that might encounter the occasional network or timeout errors along the way.  If `debug` is defined true, the error message will be printed to console before retrying.  `maxRetries` should only be used for data with user-supplied `_id` to prevent potential duplicate records on retry.
 
+An exponential backoff is provided by defining `backoffDelay` in options. The backoff can be capped by defining `maxBackoffDelay` and variance can be applied by defining `backoffVariance` (should be between 0-1)
+
 If index or type are not specified when the function is called,  they will have to be supplied as `_index` and `_type` properties of each document. The bulk command first looks for `_source` in the document to use as a document body (in case the document originates from a scroll command), alternatively using the document itself as a body.
 
 Available actions are also provided as separate api commands:

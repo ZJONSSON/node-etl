@@ -2,7 +2,7 @@ const etl = require('../index');
 const Promise = require('bluebird');
 const t = require('tap');
 
-let data = [],i=0;
+let data = [], i=0;
 let retries = 0;
 
 // Mock an elastic client
@@ -16,7 +16,7 @@ const client = {
     else {
       data = data.concat(options.body);
       return {
-        items: options.body.map(function() { return {};})
+        items: options.body.slice(0, options.body.length/2).map(function() { return {};})
       };
     }
   }
@@ -41,6 +41,47 @@ t.test('elastic bulk insert retry ',async t => {
 
   t.same(retries, 1, 'A single retry is made');
   t.same(data,[1,2,3,4,7,8,9,10,5,6],'retries on error');
+});
+
+t.test('elastic bulk insert retry single item',async t => {  
+
+  // Mock an elastic client
+  const singleFailureRetryClient = {
+    bulk : async function(options) {
+      await Promise.delay(100);
+      if (options.body.length === 4) {
+        return {
+          items: [
+            {
+              update: { error: 'unable to insert' }
+            },
+            {
+              update: { _id: options.body[2].update._id }
+            }
+          ]
+        };
+      }
+      else if (options.body.length === 2) {
+        return {
+          items: [{update: { _id: options.body[0].update._id }}]
+        };
+      }
+    }
+  };
+
+  const upsert = etl.elastic.upsert(singleFailureRetryClient,'test','test',{pushResult:true,maxRetries:1,retryDelay:10,concurrency:10});
+
+  let data = await etl.toStream([1,2,3,4,5,6,7,8,9,10].map(function(d) { return {_id:d,num:d};}))
+    .pipe(etl.collect(2))
+    .pipe(upsert)
+    .promise();
+  
+  data = [].concat.apply([],data.map(d => d.items));
+  
+  data = data.filter(d => d.update)
+    .map(d => d.update._id);
+
+  t.same(data,[2,1,4,3,6,5,8,7,10,9],'retries on error');
 });
 
 

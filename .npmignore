@@ -1,2 +1,5 @@
 /.nyc_output/
 /coverage/
+/test/
+/.docker_node_modules/
+/.vscode/

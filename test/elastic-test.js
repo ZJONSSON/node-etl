@@ -1,11 +1,11 @@
 const etl = require('../index');
 const data = require('./data');
 const Promise = require('bluebird');
-const elasticsearch = require('elasticsearch');
+const elasticsearch = require('@elastic/elasticsearch');
 const t = require('tap');
 
 const client = new elasticsearch.Client({
-  host: 'elasticsearch:9200'
+  node: 'http://elasticsearch:9200'
 });
 
 function convertHits(d) {
@@ -52,7 +52,8 @@ t.test('elastic', {autoend:true}, async t => {
 
   t.test('retreive data with client.search()', async t => {
     await Promise.delay(2000); 
-    const d = await client.search({index:'test',type:'test'});
+    let d = await client.search({index:'test',type:'test'});
+    if (d.body) d = d.body;
     const values = convertHits(d.hits.hits);
     t.same(values,data.data,'data matches');
   });
@@ -61,8 +62,9 @@ t.test('elastic', {autoend:true}, async t => {
     const find = etl.elastic.find(client);
     find.end({index:'test','type':'test'});
 
-    const d = await find.promise();  
+    let d = await find.promise();  
     const values = convertHits(d);
+    if (d.body) d = d.body;
     t.same(values,data.data,'returns original data');
   });
 

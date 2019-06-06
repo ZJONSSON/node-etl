@@ -19,6 +19,7 @@ function convertHits(d) {
 
 t.test('elastic', {autoend:true}, async t => {
   await client.indices.delete({index:'test'}).catch(Object);
+  await client.indices.delete({index:'testretries'}).catch(Object);
 
   t.test('#getMeta', t => {
     const bulk = etl.elastic.bulk('index', {});
@@ -80,5 +81,17 @@ t.test('elastic', {autoend:true}, async t => {
 
     t.same(scroll.scroll_id,undefined,'scrolling has finished');  // scrolling has finished
     t.same(convertHits(d),data.data,'returns original data');
+  });
+
+  t.test('No retry on mapping exception', async t => {
+    const upsert = etl.elastic.index(client,'testretries','testretries',{maxRetries: 1, retryDelay:1, pushErrors: true});
+    let results = upsert.pipe(etl.map()).promise();
+    upsert.write({number:2});
+    upsert.write({number: 'not a number'});
+    upsert.end();
+
+    results = await results;
+    t.same(results[0][0].error.type, 'mapper_parsing_exception');
+    t.end();
   });
 });

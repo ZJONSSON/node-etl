@@ -325,6 +325,8 @@ etl.file('test.csv')
 
 Syntax sugar for `mongo.update` with `{upsert: true}`
 
+By default `update` and `upsert` will take each data object and wrap it within a `$set{}`.  If you want to have full control of the mongo update verbs used you can put them under `$update` in the data object.
+
 #### Mysql
 
 <a name="mysqlupsert" href="#mysqlupsert">#</a> etl.mysql.<b>upsert</b>(<i>pool</i>, <i>schema</i>, <i>table</i> [,<i>options</i>])

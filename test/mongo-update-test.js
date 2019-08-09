@@ -148,9 +148,31 @@ t.test('mongo update', {autoend: true}, t => {
 
       t.test('find',async t =>  {
         const d = await collection.find({},{_id:false}).toArrayAsync();
-          
         t.same(d,data.data,'results are saved');
       });
+    });
+  });
+
+  t.test('using $update with upsert function',{autoend: true}, async t => {
+    const collection = await mongo.getCollection('upsert3');
+    t.test('should populate', async t => {
+      const upsert = etl.mongo.upsert(collection,['name'],{pushResult:true});
+
+      let d = await data.stream()
+        .pipe(etl.map(d => Object.assign( {name: d.name, $update:{$set: d}})))
+        .pipe(etl.collect(100))
+        .pipe(upsert)
+        .promise();
+
+      d = d[0];
+      t.same(d.nUpserted,3,'upserts 3 records');
+      t.same(d.nMatched,0,'matches 0 records');
+      t.end();
+    });
+
+    t.test('find',async t =>  {
+      const d = await collection.find({}, {_id: false}).toArrayAsync();          
+      t.same(d,data.data,'results are saved');
     });
   });
 

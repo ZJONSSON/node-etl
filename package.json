@@ -1,6 +1,6 @@
 {
   "name": "etl",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "Collection of stream-based components that form an ETL pipeline",
   "main": "index.js",
   "author": "Ziggy Jonsson (http://github.com/zjonsson/)",
@@ -26,6 +26,8 @@
     "mysql": "^2.17.1",
     "pg": "~6.2.3",
     "pg-query-stream": "~1.0.0",
-    "tap": "^10.3.2"
+    "tap": "^14.6.9",
+    "sqlite3": "^4.1.0",
+    "url-js": "^0.2.5"
   }
 }

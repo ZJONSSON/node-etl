@@ -6,7 +6,7 @@ const t = require('tap');
 t.test('expanded', {autoend: true, jobs: 10}, async t => {
   t.test('stream without expanded', async t => {
     const d = await data.stream({clone:true}).pipe(etl.map()).promise();
-    d.forEach(d => t.same(Object.keys(d),{},'no prototype keys'));
+    d.forEach(d => t.same(Object.keys(d),[],'no prototype keys'));
   });
 
   t.test('stream with expanded', async t => {

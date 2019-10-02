@@ -29,10 +29,11 @@ t.test('postgres', async t => {
   await before;
   t.test('inserts', async t => {
     const d = await data.stream()
-      .pipe(etl.postgres.upsert(pool,'circle_test_schema','test',{pushResult:true}))
+      .pipe(etl.postgres.insert(pool,'circle_test_schema','test',{pushResult:true}))
       .promise();
 
-    t.same(d.length,3,'returns correct length');
+    t.same(d.length,1,'Only one request sent');
+    t.same(d[0].rowCount,3,'rowCount is correct');
   });
 
   t.test('and records are verified',async t => {
@@ -46,6 +47,18 @@ t.test('postgres', async t => {
     const d = await p.query('SELECT * from circle_test_schema.test order by age');
     t.same(d.rows,expected,'records verified');
   });
+
+  t.test('upserts', async t => {
+    await p.query('DELETE from circle_test_schema.test');
+    const d = await data.stream()
+      .pipe(etl.postgres.upsert(pool,'circle_test_schema','test',{pushResult:true}))
+      .promise();
+
+    t.same(d.length,3,'Three request sent');
+    t.same(d[0].rowCount,1,'rowCount is correct');
+  });
+
+
 
   t.test('streaming', async t => {
     const d = await p.stream(new QueryStream('select * from circle_test_schema.test'))

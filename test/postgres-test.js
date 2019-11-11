@@ -22,7 +22,7 @@ const before = p.query('CREATE SCHEMA circle_test_schema')
     'CREATE TABLE circle_test_schema.test ('+
     'name varchar(45),'+
     'age integer,'+
-    'dt date '+
+    'dt date, '+
     'CONSTRAINT test_pkey PRIMARY KEY (name)'+
     ')'
   ));

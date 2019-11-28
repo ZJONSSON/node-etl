@@ -6,7 +6,7 @@ let client;
 async function getMongodbDriver() {
 
   if (!client) {
-    client = await mongodbClient.connect('mongodb://mongodb:27017/etl_tests', {"useNewUrlParser": true, "useUnifiedTopology": true});
+    client = await mongodbClient.connect('mongodb://localhost:27017/etl_tests', {"useNewUrlParser": true, "useUnifiedTopology": true});
   }
 
   return client.db();
@@ -19,7 +19,7 @@ async function getCollection(collectionName) {
 
 async function clear() {
   const db = await getMongodbDriver();
-  await Promise.all(
+  return Promise.all(
     [
       db.collection("insert").deleteMany({}),
       db.collection("update-empty").deleteMany({}),
@@ -28,7 +28,6 @@ async function clear() {
       db.collection("upsert2").deleteMany({}),
       db.collection("upsert3").deleteMany({})
     ]);
-  await client.close();
 }
 
 module.exports = {

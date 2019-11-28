@@ -6,7 +6,7 @@ const t = require('tap');
 
 t.test('mongo update', {autoend: true}, t => {
 
-  t.teardown(() => t.end());
+  t.teardown(() => clear());
 
   t.test('single record', {autoend: true}, async t => {
     const collection = await getCollection('update-empty');
@@ -104,6 +104,7 @@ t.test('mongo update', {autoend: true}, t => {
           if (i) d.newfield = 'newfield';
           return d;
         });
+        console.log(d);
         t.same(d,expected,'results were saved');
       });
     });

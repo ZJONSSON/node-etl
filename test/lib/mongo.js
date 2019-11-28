@@ -1,42 +1,37 @@
-var Promise = require('bluebird'),
-    mongo = require('mongodb'),
-    data = require('../data');
 
+const mongodbClient = require("mongodb").MongoClient;
 
-Promise.promisifyAll(mongo);
-Promise.promisifyAll(mongo.MongoClient);
+let client;
 
-module.exports = () => ({
-  db : mongo.connectAsync('mongodb://mongodb:27017/etl_tests'),
+async function getMongodbDriver() {
 
-  getCollection : function(name) {
-    var self = this,collection;
-
-    if (this.collections[name])
-      return Promise.resolve(this.collections[name]);
-    
-    return this.db
-      .then(function(db) {
-        return db.collection(name);
-      })
-      .then(function(d) {
-        collection = self.collections[name] = d;
-        return collection.removeAsync({});
-      })
-      .then(function() {
-        return collection;
-      });
-  },
-
-  collections: {},
-
-  cleanup : function() {
-    return this.db
-      .then(function(db) {
-        return Promise.map(Object.keys(this.collections),function(key) {
-          return db.dropCollectionAsync(key);
-        });
-      });
+  if (!client) {
+    client = await mongodbClient.connect('mongodb://localhost:27017/etl_tests', {"useNewUrlParser": true, "useUnifiedTopology": true});
   }
-});
+
+  return client.db();
+}
+
+async function getCollection(collectionName) {
+  const db = await getMongodbDriver();
+  return db.collection(collectionName);
+}
+
+async function clear() {
+  const db = await getMongodbDriver();
+  return Promise.all(
+    [
+      db.collection("insert").deleteMany({}),
+      db.collection("update-empty").deleteMany({}),
+      db.collection("update-populated").deleteMany({}),
+      db.collection("upsert").deleteMany({}),
+      db.collection("upsert2").deleteMany({}),
+      db.collection("upsert3").deleteMany({})
+    ]);
+}
+
+module.exports = {
+  getCollection,
+  clear
+};
 

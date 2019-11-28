@@ -19,7 +19,7 @@ async function getCollection(collectionName) {
 
 async function clear() {
   const db = await getMongodbDriver();
-  return Promise.all(
+  await Promise.all(
     [
       db.collection("insert").deleteMany({}),
       db.collection("update-empty").deleteMany({}),
@@ -28,6 +28,7 @@ async function clear() {
       db.collection("upsert2").deleteMany({}),
       db.collection("upsert3").deleteMany({})
     ]);
+  client.close();
 }
 
 module.exports = {

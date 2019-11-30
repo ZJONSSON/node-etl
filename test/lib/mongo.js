@@ -6,7 +6,7 @@ let client;
 async function getMongodbDriver() {
 
   if (!client) {
-    client = await mongodbClient.connect('mongodb://localhost:27017/etl_tests', {"useNewUrlParser": true, "useUnifiedTopology": true});
+    client = await mongodbClient.connect('mongodb://mongodb:27017/etl_tests', {"useNewUrlParser": true, "useUnifiedTopology": true});
   }
 
   return client.db();
@@ -28,7 +28,7 @@ async function clear() {
       db.collection("upsert2").deleteMany({}),
       db.collection("upsert3").deleteMany({})
     ]);
-  client.close();
+  await client.close();
 }
 
 module.exports = {

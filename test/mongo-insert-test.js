@@ -6,7 +6,7 @@ const Promise = require('bluebird');
 
 t.test('mongo.insert', async t => {
 
-  t.teardown(() => clear());
+  t.teardown(() => t.end());
   
   t.test('piping data into mongo.insert',async t => {
     const collection = await getCollection('insert');
@@ -42,6 +42,14 @@ t.test('mongo.insert', async t => {
 
     t.same(e.message,'CONNECTION_ERROR','should bubble down');
   });
+})
+.then(() => clear())
+.then(() => t.end())
+.catch(e => {
+  if (e.message.includes('ECONNREFUSED'))
+    console.warn('Warning: MongoDB server not available');
+  else
+    console.warn(e.message);
 });
 
   

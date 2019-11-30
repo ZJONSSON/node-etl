@@ -104,7 +104,6 @@ t.test('mongo update', {autoend: true}, t => {
           if (i) d.newfield = 'newfield';
           return d;
         });
-        console.log(d);
         t.same(d,expected,'results were saved');
       });
     });

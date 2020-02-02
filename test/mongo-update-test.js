@@ -1,13 +1,15 @@
 const etl = require('../index');
 const Promise = require('bluebird');
 const data = require('./data');
-const mongo = require('./lib/mongo')();
+const {getCollection, clear} = require('./lib/mongo');
 const t = require('tap');
 
 t.test('mongo update', {autoend: true}, t => {
 
+  t.teardown(() => t.end());
+
   t.test('single record', {autoend: true}, async t => {
-    const collection = mongo.getCollection('update-empty');
+    const collection = await getCollection('update-empty');
 
     t.test('missing keys',async t => {
       const e = await Promise.try(() => etl.mongo.update(collection))
@@ -40,7 +42,7 @@ t.test('mongo update', {autoend: true}, t => {
   });
 
   t.test('bulk', {autoend:true}, async t => {
-    const collection = await mongo.getCollection('update-empty');
+    const collection = await getCollection('update-empty');
 
     t.test('on an empty collection', async t => {
       const update = etl.mongo.update(collection,['name'],{pushResult:true});
@@ -57,7 +59,7 @@ t.test('mongo update', {autoend: true}, t => {
     });
 
     t.test('with pushresults == false',async t => {
-      const collection = await mongo.getCollection('update-empty');
+      const collection = await getCollection('update-empty');
       const update = etl.mongo.update(collection,['name']);
 
       const d = await data.stream()
@@ -68,10 +70,10 @@ t.test('mongo update', {autoend: true}, t => {
     });
 
     t.test('on a populated collection', {autoend: true}, async t => {
-      const collection = await mongo.getCollection('update-populated',true);
+      const collection = await getCollection('update-populated');
 
       t.test('update', async t => {
-        await collection.insertAsync(data.copy());
+        await collection.insertMany(data.copy());
         const update = etl.mongo.update(collection,['name'],{pushResult:true});
 
         let d = await data.stream()
@@ -95,20 +97,19 @@ t.test('mongo update', {autoend: true}, t => {
       });
 
       t.test('using find', async t => {
-        const collection = await  mongo.getCollection('update-populated',true);
-        const d = await collection.find({},{_id:false}).toArrayAsync();
+        const collection = await getCollection('update-populated');
+        const d = await collection.find({},{projection: {_id:false}}).toArray();
 
         const expected = data.copy().map(function(d,i) {
           if (i) d.newfield = 'newfield';
           return d;
         });
-
         t.same(d,expected,'results were saved');
       });
     });
 
-    t.test('using upsert option', {autoend: true}, t => {
-      const collection = mongo.getCollection('upsert');
+    t.test('using upsert option', {autoend: true}, async t => {
+      const collection = await getCollection('upsert');
 
       t.test('upsert', async t => {  
         const upsert = etl.mongo.update(collection,['name'],{pushResult:true,upsert:true});
@@ -123,15 +124,15 @@ t.test('mongo update', {autoend: true}, t => {
       });
 
       t.test('find',async t => {
-        const collection = await mongo.getCollection('upsert');
-        const d = await collection.find({},{_id:false}).toArrayAsync();
+        const collection = await getCollection('upsert');
+        const d = await collection.find({},{projection : {_id:false}}).toArray();
           
         t.same(d,data.data,'results are saved');
       });
     });
 
     t.test('using upsert function',{autoend: true}, async t => {
-      const collection = await mongo.getCollection('upsert2');
+      const collection = await getCollection('upsert2');
 
       t.test('should populate', async t => {
         const upsert = etl.mongo.upsert(collection,['name'],{pushResult:true});
@@ -147,14 +148,14 @@ t.test('mongo update', {autoend: true}, t => {
       });
 
       t.test('find',async t =>  {
-        const d = await collection.find({},{_id:false}).toArrayAsync();
+        const d = await collection.find({},{projection: {_id:false}}).toArray();
         t.same(d,data.data,'results are saved');
       });
     });
   });
 
   t.test('using $update with upsert function',{autoend: true}, async t => {
-    const collection = await mongo.getCollection('upsert3');
+    const collection = await getCollection('upsert3');
     t.test('should populate', async t => {
       const upsert = etl.mongo.upsert(collection,['name'],{pushResult:true});
 
@@ -171,7 +172,7 @@ t.test('mongo update', {autoend: true}, t => {
     });
 
     t.test('find',async t =>  {
-      const d = await collection.find({}, {_id: false}).toArrayAsync();          
+      const d = await collection.find({}, {projection: {_id: false}}).toArray();          
       t.same(d,data.data,'results are saved');
     });
   });
@@ -185,10 +186,11 @@ t.test('mongo update', {autoend: true}, t => {
     t.same(e.message,'CONNECTION_ERROR','passes down');
   });
 })
+.then(() => clear())
+.then(() => t.end())
 .catch(e => {
   if (e.message.includes('ECONNREFUSED'))
     console.warn('Warning: MongoDB server not available');
   else
     console.warn(e.message);
-})
-.then(() => mongo.db.then( db => db.close()));
+});

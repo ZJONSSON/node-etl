@@ -1,6 +1,6 @@
 {
   "name": "etl",
-  "version": "0.6.8",
+  "version": "0.6.12",
   "description": "Collection of stream-based components that form an ETL pipeline",
   "main": "index.js",
   "author": "Ziggy Jonsson (http://github.com/zjonsson/)",
@@ -19,7 +19,7 @@
     "duplexer2": "~0.1.4",
     "moment": "~2.21.0",
     "sqs-bulk-loader": "^1.0.0",
-    "streamz": "~1.8.4"
+    "streamz": "~1.8.10"
   },
   "devDependencies": {
     "@elastic/elasticsearch": "~7.1.0",

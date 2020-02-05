@@ -187,6 +187,8 @@ t.test('mongo update', {autoend: true}, t => {
     t.same(e.message,'CONNECTION_ERROR','passes down');
   });
 })
+.then(() => clear())
+.then(() => t.end())
 .catch(e => {
   if (e.message.includes('ECONNREFUSED'))
     console.warn('Warning: MongoDB server not available');

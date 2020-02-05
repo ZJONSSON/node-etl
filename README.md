@@ -48,6 +48,7 @@ fs.createReadStream('scores.csv')
   * [Postgres](#postgres)
   * [Elasticsearch](#elasticsearch)
   * [BigQuery](#bigquery)
+  * [SQS](#sqs)
 * [Utilities](#utilities)
 
 ### Parsers 
@@ -445,23 +446,28 @@ etl.elastic.scroll(esClient,{index: 'index.a', size: 5000})
 
 If `custom` action is selected, each packet must be the raw metadata to be sent to elasticsearch with the optional second line stored in property `body`
 
-#### BigQuery
+#### SQS
 
-<a name="bigquery" href="#bigquery">#</a> etl.bigquery.<b>insert</b>(<i>table</i>, [,<i>options</i>])
+<a name="sqs" href="#sqs">#</a> etl.sqs.<b>bulk</b>(<i>queueUrl</i>, <i>sqsClient</i>, <i>idKey</i> [,<i>options</i>])
 
-Bulk insert data into BigQuery. This function first downloads the field names for the table and then inserts the matching columns from the incoming data.  The first variable needs to be an instance of the BigQuery table class.  Options can specify the concurrency (i.e. how many concurrent insert connections are allowed);
+Bulk sends messages to queue specified via queueUrl parameter. It internally uses `sendMessageBatch` method from `aws-sdk` which has a limit to send 10 messages at one time. Bulk method can send these set of 10 messages in parallel. How many to send in parallel can be controlled via options `batchSize`. Default value is 10.
+
+By default it will look for mandatory `Id` and `MessageBody` parameter in the object. If it is not provided, it will try to fecth the Id using either `idKey` parameter passed or `_id/id`. It will then wrap the incoming object in `MessageBody`.
+
+If `Id` and `MessageBody` are specified it will send the complete object as it is. You can see the more details about params [here](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#sendMessageBatch-property)
+
+Sending the `sqsClient`, `idKey` and `options` are optional. By default it will look for `_id` or `id` field and use the default AWS credentials to connect to AWS SQS. If custom behavior is required, it can be sent to the bulk method.
 
 example:
 
 ```js
-const {BigQuery} = require('@google-cloud/bigquery');
-const bigquery = new BigQuery(config);
-const dataset = bigquery.dataset('my_dataset');
-const table = dataset.table('my_table');
+const queueUrl = "https://sqs.some-region.amazonaws.com/someAccountName/someQueueBame";
+const aws = require("aws-sdk");
+const sqsClient = new aws.SQS();
 
  etl.file('test.csv')
   .pipe(etl.collect(100))  // send 100 rows in each packet
-  .pipe(etl.bigquery.insert(table, {concurrency: 5}));
+  .pipe(etl.sqs.bulk(queueUrl, sqsClient, ["someIdKeyName"], {batchSize: 20}));
 ```
 
 

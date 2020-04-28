@@ -4,7 +4,7 @@ const {getCollection, clear} = require('./lib/mongo');
 const t = require('tap');
 const Promise = require('bluebird');
 
-t.only('mongo.insertOne', async t => {
+t.test('mongo.insertOne', async t => {
 
   t.teardown(() => t.end());
   
@@ -36,7 +36,7 @@ t.only('mongo.insertOne', async t => {
     const collection = Promise.reject({message: 'CONNECTION_ERROR'});
     collection.suppressUnhandledRejections();
     const e = await etl.toStream({test:true})
-      .pipe(etl.mongo.update(collection,'_id'))
+      .pipe(etl.mongo.insertOne(collection,'_id'))
       .promise()
       .then(() => {throw 'SHOULD_ERROR';}, Object);
 

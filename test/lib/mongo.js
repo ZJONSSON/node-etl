@@ -23,6 +23,7 @@ async function clear() {
     [
       db.collection("insert").deleteMany({}),
       db.collection("insert-one").deleteMany({}),
+      db.collection("insert-many").deleteMany({}),
       db.collection("update-empty").deleteMany({}),
       db.collection("update-populated").deleteMany({}),
       db.collection("upsert").deleteMany({}),

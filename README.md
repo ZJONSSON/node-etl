@@ -313,7 +313,6 @@ Example
 
 ```js
 // The following inserts data from a csv, one record at a time into a mongo collection
-// ..assuming mongo has been promisified
 
 var db = mongo.ConnectAsync('mongodb://localhost:27017/testdb');
 var collection = db.then(function(db) {
@@ -334,7 +333,6 @@ Example
 
 ```js
 // The following inserts data from a csv, 10 records at a time into a mongo collection
-// ..assuming mongo has been promisified
 
 var db = mongo.ConnectAsync('mongodb://localhost:27017/testdb');
 var collection = db.then(function(db) {

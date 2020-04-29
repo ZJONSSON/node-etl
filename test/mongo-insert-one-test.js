@@ -4,29 +4,29 @@ const {getCollection, clear} = require('./lib/mongo');
 const t = require('tap');
 const Promise = require('bluebird');
 
-t.test('mongo.insert', async t => {
+t.test('mongo.insertOne', async t => {
 
   t.teardown(() => t.end());
   
-  t.test('piping data into mongo.insert',async t => {
-    const collection = await getCollection('insert');
+  t.test('piping data into mongo.insertOne',async t => {
+    const collection = await getCollection('insert-one');
     const d = await data.stream()
-                    .pipe(etl.mongo.insert(collection,{pushResult:true}))
+                    .pipe(etl.mongo.insertOne(collection,{pushResult:true}))
                     .promise();
     d.forEach(d => t.same(d,{ok:1,n:1},'inserts each record'));
   });
 
   t.test('mongo collection',async t => {
-    const collection = await getCollection('insert');
+    const collection = await getCollection('insert-one');
     const d = await collection.find({},{ projection: {_id:0}}).toArray();
 
     t.same(d,data.data,'reveals data');
   });
 
   t.test('pushResults == false and collection as promise',async t => {
-    const collection = await getCollection('insert');
-    const d = await data.stream(etl.mongo.insert(collection))
-                .pipe(etl.mongo.insert(collection))
+    const collection = await getCollection('insert-one');
+    const d = await data.stream(etl.mongo.insertOne(collection))
+                .pipe(etl.mongo.insertOne(collection))
                 .promise();
 
     t.same(d,[],'returns nothing');
@@ -36,7 +36,7 @@ t.test('mongo.insert', async t => {
     const collection = Promise.reject({message: 'CONNECTION_ERROR'});
     collection.suppressUnhandledRejections();
     const e = await etl.toStream({test:true})
-      .pipe(etl.mongo.insert(collection,'_id'))
+      .pipe(etl.mongo.insertOne(collection,'_id'))
       .promise()
       .then(() => {throw 'SHOULD_ERROR';}, Object);
 
@@ -51,3 +51,5 @@ t.test('mongo.insert', async t => {
   else
     console.warn(e.message);
 });
+
+  

@@ -283,9 +283,9 @@ mongocollection.find({})
 
 #### Mongo
 
-<a name="mongoinsert" href="#mongoinsert">#</a> etl.mongo.<b>insert</b>(<i>collection</i> [,<i>options</i>])
+<a name="mongoinsert" href="#mongoinsert">#</a> etl.mongo.<b>insert</b>(<i>collection</i> [,<i>options</i>]) [DEPRECATED]
 
-Inserts incoming data into the provided mongodb collection.  The supplied collection can be a promise on a collection.  The options are passed on to both streamz and the mongodb insert comand.  By default this object doesn't push anything downstream, but it `pushResults` is set as `true` in options, the results from mongo will be pushed downstream.
+Inserts incoming data into the provided mongodb collection.  The supplied collection can be a promise on a collection.  The options are passed on to both streamz and the mongodb insert command.  By default this object doesn't push anything downstream, but it `pushResults` is set as `true` in options, the results from mongo will be pushed downstream.
 
 Example
 
@@ -302,6 +302,47 @@ etl.file('test.csv')
   .pipe(etl.csv())
   .pipe(etl.collect(10))
   .pipe(etl.mongo.insert(collection));
+
+```
+
+<a name="mongoinsertone" href="#mongoinsertone">#</a> etl.mongo.<b>insertOne</b>(<i>collection</i> [,<i>options</i>])
+
+Inserts one incoming data into the provided mongodb collection.  The supplied collection can be a promise on a collection.  The options are passed on to both streamz and the mongodb insertOne command.  By default this object doesn't push anything downstream, but it `pushResults` is set as `true` in options, the results from mongo will be pushed downstream.
+
+Example
+
+```js
+// The following inserts data from a csv, one record at a time into a mongo collection
+
+var db = mongo.ConnectAsync('mongodb://localhost:27017/testdb');
+var collection = db.then(function(db) {
+  return db.collection('testcollection');
+});
+
+etl.file('test.csv')
+  .pipe(etl.csv())
+  .pipe(etl.mongo.insertOne(collection));
+
+```
+
+<a name="mongoinsertmany" href="#mongoinsertmany">#</a> etl.mongo.<b>insertOne</b>(<i>collection</i> [,<i>options</i>])
+
+Inserts array of incoming data into the provided mongodb collection.  The supplied collection can be a promise on a collection.  The options are passed on to both streamz and the mongodb insertMany command.  By default this object doesn't push anything downstream, but it `pushResults` is set as `true` in options, the results from mongo will be pushed downstream.
+
+Example
+
+```js
+// The following inserts data from a csv, 10 records at a time into a mongo collection
+
+var db = mongo.ConnectAsync('mongodb://localhost:27017/testdb');
+var collection = db.then(function(db) {
+  return db.collection('testcollection');
+});
+
+etl.file('test.csv')
+  .pipe(etl.csv())
+  .pipe(etl.collect(10))
+  .pipe(etl.mongo.insertMany(collection));
 
 ```
 

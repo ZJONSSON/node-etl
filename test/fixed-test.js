@@ -28,6 +28,6 @@ t.test('fixed layout',{autoend: true, jobs: 10}, t => {
       .pipe(etl.expand())
       .promise();
       
-    t.same(d,data.data,'splits inc;oming data into columns');
+    t.same(d,data.data,'splits incoming data into columns');
   });  
 });

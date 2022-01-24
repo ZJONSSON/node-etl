@@ -179,7 +179,7 @@ If the first argument (`count`) is a function it will be used as a custom collec
 
 <a name="chain" href="#chain">#</a> etl.<b>chain</b>(<i>fn</i>)
 
-Allows a custom subchain of streams to be injected into the pipe using duplexer2. You must provide a custom function that takes in the inbound stream as a first argument and optionally an outbound stream as the second argument.   You can use the optional outbound stream directly to chain the two streams together or you can return a stream or a Promise resolved with stream or values (all of which will be piped down with `etl.toStream`).
+Allows a custom subchain of streams to be injected into the pipe using duplexer3. You must provide a custom function that takes in the inbound stream as a first argument and optionally an outbound stream as the second argument.   You can use the optional outbound stream directly to chain the two streams together or you can return a stream or a Promise resolved with stream or values (all of which will be piped down with `etl.toStream`).
 
 Example 1: Simple return of the outbound stream
 

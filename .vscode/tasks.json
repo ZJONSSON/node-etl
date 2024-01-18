@@ -6,13 +6,13 @@
     {
       "label": "Inspect Current File (Docker)",
       "type": "shell",
-      "command": "bash docker exec -it etl_runner_1 pkill -f ':9229';(docker exec  etl_runner_1 node --inspect-brk=173.23.0.100:9229 /usr/src/app/${relativeFile} &);sleep 1",
+      "command": "bash docker exec -it etl-runner-1 pkill -f ':9229';(docker exec  etl-runner-1 node --inspect-brk=173.23.0.100:9229 /usr/src/app/${relativeFile} &);sleep 1",
       "group": "test",
     },
     {
       "label": "Tap Current File (Docker)",
       "type": "shell",
-      "command": "docker exec -it etl_runner_1 tap -Rspec /usr/src/app/${relativeFile}",
+      "command": "docker exec -it etl-runner-1 tap -Rspec /usr/src/app/${relativeFile}",
       "group": "test",
     },
     {

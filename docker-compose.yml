@@ -1,4 +1,4 @@
-version: "3"
+version: "4"
 
 # IMPORTANT
 # Make sure you run setup-docker.sh before executing this!!!
@@ -48,7 +48,7 @@ services:
       - etl-network
 
   postgres:
-    image: postgres
+    image: postgres:9
     restart: always
     environment:
       POSTGRES_PASSWORD: example

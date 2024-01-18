@@ -9,8 +9,8 @@
     "url": "http://github.com/ZJONSSON/node-etl"
   },
   "scripts": {
-    "test": "docker-compose -p etl up -d --no-recreate;docker exec -it etl_runner_1 bash ./test.sh",
-    "docker": "docker-compose -p etl up -d --no-recreate;docker exec -it etl_runner_1 bash"
+    "test": "docker-compose -p etl up -d --no-recreate;docker exec -it etl-runner-1 bash ./test.sh",
+    "docker": "docker-compose -p etl up -d --no-recreate;docker exec -it etl-runner-1 bash"
   },
   "license": "MIT",
   "dependencies": {

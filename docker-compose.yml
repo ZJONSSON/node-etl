@@ -34,7 +34,7 @@ services:
         ipv4_address: 173.23.0.100
 
   mongodb:
-    image: 'mongo:4'
+    image: 'mongo:5'
     networks:
       - etl-network
 
@@ -48,7 +48,7 @@ services:
       - etl-network
 
   postgres:
-    image: postgres:9
+    image: postgres:16
     restart: always
     environment:
       POSTGRES_PASSWORD: example

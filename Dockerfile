@@ -1,4 +1,4 @@
-FROM node:12-buster
+FROM node:14-buster
 USER root
 RUN apt-get update
 RUN wget http://ftp.us.debian.org/debian/pool/main/w/wait-for-it/wait-for-it_0.0~git20180723-1_all.deb

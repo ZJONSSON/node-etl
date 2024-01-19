@@ -58,7 +58,7 @@ t.test('mongo update', {autoend: true}, t => {
       t.same(d.nMatched,0,'matched no records');
     });
 
-    t.test('with pushresults == false',async t => {
+    t.test('with pushresult == false',async t => {
       const collection = await getCollection('update-empty');
       const update = etl.mongo.update(collection,['name']);
 

@@ -13,7 +13,8 @@ t.test('mongo.insert', async t => {
     const d = await data.stream()
                     .pipe(etl.mongo.insert(collection,{pushResult:true}))
                     .promise();
-    d.forEach(d => t.same(d,{ok:1,n:1},'inserts each record'));
+    t.same(d.length,3,'returns results');
+    d.forEach(d => t.ok(d.acknowledged && d.insertedId,'inserts each record'));
   });
 
   t.test('mongo collection',async t => {
@@ -23,7 +24,7 @@ t.test('mongo.insert', async t => {
     t.same(d,data.data,'reveals data');
   });
 
-  t.test('pushResults == false and collection as promise',async t => {
+  t.test('pushResult == false and collection as promise',async t => {
     const collection = await getCollection('insert');
     const d = await data.stream(etl.mongo.insert(collection))
                 .pipe(etl.mongo.insert(collection))

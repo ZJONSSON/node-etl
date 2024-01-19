@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@elastic/elasticsearch": "~7.1.0",
-    "mongodb": "^4.17.2",
+    "mongodb": "^5.9.2",
     "mysql": "^2.17.1",
     "pg": "^8.11.3",
     "pg-query-stream": "~1.0.0",

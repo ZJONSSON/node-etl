@@ -21,7 +21,7 @@
     "streamz": "~1.8.10"
   },
   "devDependencies": {
-    "@elastic/elasticsearch": "~7.1.0",
+    "@elastic/elasticsearch": "^8.11.0",
     "mongodb": "^6.3.0",
     "mysql": "^2.18.1",
     "pg": "^8.11.3",

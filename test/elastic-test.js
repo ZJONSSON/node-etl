@@ -17,7 +17,7 @@ function convertHits(d) {
   .sort((a,b) => a.__line - b.__line);
 }
 
-t.test('elastic', {autoend:true}, async t => {
+t.test('elastic', { autoend: true }, async t => {
   await client.indices.delete({index:'test'}).catch(Object);
   await client.indices.delete({index:'testretries'}).catch(Object);
 
@@ -53,7 +53,7 @@ t.test('elastic', {autoend:true}, async t => {
 
   t.test('retreive data with client.search()', async t => {
     await Promise.delay(2000); 
-    let d = await client.search({index:'test',type:'test'});
+    let d = await client.search({index:'test'});
     if (d.body) d = d.body;
     const values = convertHits(d.hits.hits);
     t.same(values,data.data,'data matches');
@@ -61,7 +61,7 @@ t.test('elastic', {autoend:true}, async t => {
 
   t.test('etl.elastic.find()',async t => {
     const find = etl.elastic.find(client);
-    find.end({index:'test','type':'test'});
+    find.end({index:'test'});
 
     let d = await find.promise();  
     const values = convertHits(d);
@@ -70,7 +70,7 @@ t.test('elastic', {autoend:true}, async t => {
   });
 
   t.test('etl.elastic.scroll()',async t => {
-    const scroll = etl.elastic.scroll(client,{index: 'test', type: 'test', size: 1},{ highWaterMark: 0 });
+    const scroll = etl.elastic.scroll(client,{index: 'test', size: 1},{ highWaterMark: 0 });
     // setting highWaterMark to zero and size = 1 allows us to test for backpressure
     // a missing scroll_id would indicate that scrolling has finished pre-emptively
     const d = await scroll.pipe(etl.map(d => {
@@ -91,7 +91,7 @@ t.test('elastic', {autoend:true}, async t => {
     upsert.end();
 
     results = await results;
-    t.same(results[0][0].error.type, 'mapper_parsing_exception');
+    t.same(results[0][0].error.type, 'document_parsing_exception');
     t.end();
   });
 });

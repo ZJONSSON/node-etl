@@ -34,7 +34,7 @@ services:
         ipv4_address: 173.23.0.100
 
   mongodb:
-    image: 'mongo:5'
+    image: 'mongo:6'
     networks:
       - etl-network
 

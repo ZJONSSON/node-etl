@@ -4,11 +4,11 @@ const data = require('./data');
 const {getCollection, clear} = require('./lib/mongo');
 const t = require('tap');
 
-t.test('mongo update', {autoend: true}, t => {
+t.test('mongo update', { autoend: true }, t => {
 
   t.teardown(() => t.end());
 
-  t.test('single record', {autoend: true}, async t => {
+  t.test('single record', { autoend: true }, async t => {
     const collection = await getCollection('update-empty');
 
     t.test('missing keys',async t => {
@@ -24,7 +24,7 @@ t.test('mongo update', {autoend: true}, t => {
 
       const d = await data.pipe(insert).promise();
 
-      t.same(d[0].nUpserted,1,'upserts one record');
+      t.same(d[0].upsertedCount,1,'upserts one record');
     });
 
     t.test('updates into mongo', async t => {
@@ -34,10 +34,10 @@ t.test('mongo update', {autoend: true}, t => {
 
       const d = await data.pipe(insert).promise();
 
-      if (d[0].nModified === null)
+      if (d[0].nModified === null && d[0].modifiedCount === null)
         t.pass('WARNING - Mongo 2.6 or higher needed for nModfied');
       else
-        t.same(d[0].nModified,1);
+        t.same(d[0].modifiedCount,1);
     });
   });
 
@@ -53,9 +53,9 @@ t.test('mongo update', {autoend: true}, t => {
               .promise();
           
       d = d[0];
-      t.same(d.nInserted,0,'inserts no records');
-      t.same(d.nUpserted,0,'upserts no records');
-      t.same(d.nMatched,0,'matched no records');
+      t.same(d.insertedCount,0,'inserts no records');
+      t.same(d.upsertedCount,0,'upserts no records');
+      t.same(d.matchedCount,0,'matched no records');
     });
 
     t.test('with pushresult == false',async t => {
@@ -88,11 +88,11 @@ t.test('mongo update', {autoend: true}, t => {
           .promise();
                 
         d = d[0];
-        if (d.nModified === null)
+        if (d.nModified === null && d.modifiedCount === null)
           console.log('WARNING - Mongo 2.6 or higher needed for nModfied');
         else {
-          t.same(d.nModified,2,'modified 2 records');
-          t.same(d.nInserted,0,'inserted zero records');
+          t.same(d.modifiedCount,2,'modified 2 records');
+          t.same(d.insertedCount,0,'inserted zero records');
         }
       });
 
@@ -119,8 +119,8 @@ t.test('mongo update', {autoend: true}, t => {
           .promise();
 
         d = d[0];
-        t.same(d.nUpserted,3,'3 updated');
-        t.same(d.nMatched,0, '0 matched');
+        t.same(d.upsertedCount,3,'3 updated');
+        t.same(d.matchedCount,0, '0 matched');
       });
 
       t.test('find',async t => {
@@ -143,8 +143,8 @@ t.test('mongo update', {autoend: true}, t => {
           .promise();
 
         d = d[0];
-        t.same(d.nUpserted,3,'upserts 3 records');
-        t.same(d.nMatched,0,'matches 0 records');
+        t.same(d.upsertedCount,3,'upserts 3 records');
+        t.same(d.matchedCount,0,'matches 0 records');
       });
 
       t.test('find',async t =>  {
@@ -166,8 +166,8 @@ t.test('mongo update', {autoend: true}, t => {
         .promise();
 
       d = d[0];
-      t.same(d.nUpserted,3,'upserts 3 records');
-      t.same(d.nMatched,0,'matches 0 records');
+      t.same(d.upsertedCount,3,'upserts 3 records');
+      t.same(d.matchedCount,0,'matches 0 records');
       t.end();
     });
 

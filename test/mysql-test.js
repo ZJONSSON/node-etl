@@ -30,7 +30,7 @@ t.test('mysql', {timeout: 20000}, async function(t) {
 
   t.test('inserts', async function(t) {
     const d = await data.stream()
-      .pipe(etl.mysql.upsert(pool,'circle_test-1','test-2',{pushResult:true}))
+      .pipe(etl.mysql.upsert(pool,'circle_test-1','test-2',{pushResults:true}))
       .promise();
 
     t.same(d[0].affectedRows,3,'returns right length');

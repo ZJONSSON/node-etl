@@ -31,7 +31,7 @@ t.test('postgres', async t => {
   await before;
   t.test('inserts', async t => {
     const d = await data.stream()
-      .pipe(etl.postgres.insert(pool,'circle_test_schema','test',{pushResult:true}))
+      .pipe(etl.postgres.insert(pool,'circle_test_schema','test',{pushResults:true}))
       .promise();
 
     t.same(d.length,1,'Only one request sent');
@@ -54,7 +54,7 @@ t.test('postgres', async t => {
     // Remove delete, leave previous data in table to match name PKEY
     //await p.query('DELETE from circle_test_schema.test');
     const d = await dataChanged.stream()
-      .pipe(etl.postgres.upsert(pool,'circle_test_schema','test',{pushResult:true}))
+      .pipe(etl.postgres.upsert(pool,'circle_test_schema','test',{pushResults:true}))
       .promise();
 
     t.same(d.length,3,'Three request sent');

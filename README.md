@@ -285,7 +285,7 @@ mongocollection.find({})
 
 <a name="mongoinsert" href="#mongoinsert">#</a> etl.mongo.<b>insert</b>(<i>collection</i> [,<i>options</i>])
 
-Inserts incoming data into the provided mongodb collection.  The supplied collection can be a promise on a collection.  The options are passed on to both streamz and the mongodb insert comand.  By default this object doesn't push anything downstream, but if `pushResult` is set as `true` in options, the results from mongo will be pushed downstream.
+Inserts incoming data into the provided mongodb collection.  The supplied collection can be a promise on a collection.  The options are passed on to both streamz and the mongodb insert comand.  By default this object doesn't push anything downstream, but if `pushResults` is set as `true` in options, the results from mongo will be pushed downstream.
 
 Example
 
@@ -307,7 +307,7 @@ etl.file('test.csv')
 
 <a name="mongoupdate" href="#mongoupdate">#</a> etl.mongo.<b>update</b>(<i>collection</i> [,<i>keys</i>] [,<i>options</i>])
 
-Updates incoming data by building a `criteria` from an array of `keys` and the incoming data.   Supplied collection can be a promise and results can be pushed downstream by declaring `pushResult : true`.   The options are passed to mongo so defining `upsert : true` in options will ensure an upsert of the data.
+Updates incoming data by building a `criteria` from an array of `keys` and the incoming data.   Supplied collection can be a promise and results can be pushed downstream by declaring `pushResults : true`.   The options are passed to mongo so defining `upsert : true` in options will ensure an upsert of the data.
 
 Example
 
@@ -407,7 +407,7 @@ etl.file('test.csv')
 
 Transmit incoming packets to elasticsearch, setting the appropriate meta-data depending on the default action. Each incoming packet can be an array of documents (or a single document).  Each document should contain a unique `_id`.   To bulk documents together use `etl.collect(num)` above the elastic adapter.
 
-The results are not pushed downstream unless `pushResult` is defined in the options. The body of the incoming data is included in the results, allowing for easy resubmission upon version conflicts. By defining option `pushErrors` as `true` only errors will be pushed downstream.  Maximum number of concurrent connections can be defined as option `concurrency`.  If `maxRetries` is defined in options, an error response from the server will result in retries up to the specified limit - after a wait of `retryDelay` or 30 seconds.  This can be useful for long-running upsert operations that might encounter the occasional network or timeout errors along the way.  If `debug` is defined true, the error message will be printed to console before retrying.  `maxRetries` should only be used for data with user-supplied `_id` to prevent potential duplicate records on retry.
+The results are not pushed downstream unless `pushResults` is defined in the options. The body of the incoming data is included in the results, allowing for easy resubmission upon version conflicts. By defining option `pushErrors` as `true` only errors will be pushed downstream.  Maximum number of concurrent connections can be defined as option `concurrency`.  If `maxRetries` is defined in options, an error response from the server will result in retries up to the specified limit - after a wait of `retryDelay` or 30 seconds.  This can be useful for long-running upsert operations that might encounter the occasional network or timeout errors along the way.  If `debug` is defined true, the error message will be printed to console before retrying.  `maxRetries` should only be used for data with user-supplied `_id` to prevent potential duplicate records on retry.
 
 An exponential backoff is provided by defining `backoffDelay` in options. The backoff can be capped by defining `maxBackoffDelay` and variance can be applied by defining `backoffVariance` (should be between 0-1)
 

@@ -36,7 +36,7 @@ t.test('elastic', async t => {
 
   t.test('pipe into etl.elastic.index()',async t => {
     let i = 0;
-    const upsert = etl.elastic.index(client,'test','test',{pushResult:true});
+    const upsert = etl.elastic.index(client,'test','test',{pushResults:true});
 
     const d = await data.stream()
       .pipe(etl.map(d => {

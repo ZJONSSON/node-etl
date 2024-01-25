@@ -17,7 +17,7 @@ t.test('mongo update', async t => {
     });
 
     t.test('upsert', async t => {
-      const insert = etl.mongo.update(collection,['__line'],{upsert: true, pushResult:true});
+      const insert = etl.mongo.update(collection,['__line'],{upsert: true, pushResults:true});
       const data = etl.map();
       data.end({name:'single record',__line:999});
 
@@ -27,7 +27,7 @@ t.test('mongo update', async t => {
     });
 
     t.test('updates into mongo', async t => {
-      const insert = etl.mongo.update(collection,['__line'],{pushResult:true});
+      const insert = etl.mongo.update(collection,['__line'],{pushResults:true});
       const data = etl.map();
       data.end({name:'updated single record',__line:999});
 
@@ -44,7 +44,7 @@ t.test('mongo update', async t => {
     const collection = await getCollection('update-empty');
 
     t.test('on an empty collection', async t => {
-      const update = etl.mongo.update(collection,['name'],{pushResult:true});
+      const update = etl.mongo.update(collection,['name'],{pushResults:true});
 
       let d = await data.stream()
               .pipe(etl.collect(100))
@@ -57,7 +57,7 @@ t.test('mongo update', async t => {
       t.same(d.matchedCount,0,'matched no records');
     });
 
-    t.test('with pushresult == false',async t => {
+    t.test('with pushresults == false',async t => {
       const collection = await getCollection('update-empty');
       const update = etl.mongo.update(collection,['name']);
 
@@ -73,7 +73,7 @@ t.test('mongo update', async t => {
 
       t.test('update', async t => {
         await collection.insertMany(data.copy());
-        const update = etl.mongo.update(collection,['name'],{pushResult:true});
+        const update = etl.mongo.update(collection,['name'],{pushResults:true});
 
         let d = await data.stream()
           .pipe(etl.map(function(d) {
@@ -111,7 +111,7 @@ t.test('mongo update', async t => {
       const collection = await getCollection('upsert');
 
       t.test('upsert', async t => {  
-        const upsert = etl.mongo.update(collection,['name'],{pushResult:true,upsert:true});
+        const upsert = etl.mongo.update(collection,['name'],{pushResults:true,upsert:true});
         let d = await data.stream()
           .pipe(etl.collect(100))
           .pipe(upsert)
@@ -134,7 +134,7 @@ t.test('mongo update', async t => {
       const collection = await getCollection('upsert2');
 
       t.test('should populate', async t => {
-        const upsert = etl.mongo.upsert(collection,['name'],{pushResult:true});
+        const upsert = etl.mongo.upsert(collection,['name'],{pushResults:true});
 
         let d = await data.stream()
           .pipe(etl.collect(100))
@@ -156,7 +156,7 @@ t.test('mongo update', async t => {
   t.test('using $update with upsert function', async t => {
     const collection = await getCollection('upsert3');
     t.test('should populate', async t => {
-      const upsert = etl.mongo.upsert(collection,['name'],{pushResult:true});
+      const upsert = etl.mongo.upsert(collection,['name'],{pushResults:true});
 
       let d = await data.stream()
         .pipe(etl.map(d => Object.assign( {name: d.name, $update:{$set: d}})))

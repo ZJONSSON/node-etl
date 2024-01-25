@@ -5,7 +5,7 @@ const t = require('tap');
 
 const data = [1,2,3,4,5,6,7,8,9,10,11];
 
-t.test('collect', {autoend: true, jobs: 10}, t => {
+t.test('collect', {jobs: 10}, async t => {
   
   t.test('etl.collect(3)', async t => {
     const expected = [
@@ -20,7 +20,7 @@ t.test('collect', {autoend: true, jobs: 10}, t => {
   });
 
 
-  t.test('etl.collect(999) for small dataset',async t => {
+  t.test('etl.collect(999) for small dataset', async t => {
     const expected = [data];
 
     const d = await dataStream(data)
@@ -30,7 +30,7 @@ t.test('collect', {autoend: true, jobs: 10}, t => {
     t.same(d,expected,'returns everything in the array');
   });
   
-  t.test('etl.collect(1)',async t => {
+  t.test('etl.collect(1)', async t => {
     const expected = data.map(d => [d]);
 
     const d = await dataStream(data)
@@ -40,7 +40,7 @@ t.test('collect', {autoend: true, jobs: 10}, t => {
     t.same(d,expected,'returns array of one element arrays');
   });
 
-  t.test('maxDuration',async t => {
+  t.test('maxDuration', async t => {
     const d = await etl.toStream([1,2,3,4,5,6,7,8,9,10])
       .pipe(etl.map(d => Promise.delay(100).then(() => d)))
       .pipe(etl.collect(5,300))
@@ -49,7 +49,7 @@ t.test('collect', {autoend: true, jobs: 10}, t => {
     t.same(d,[[1,2,3],[4,5,6],[7,8,9],[10]],'pushes on timeouts');
   });
 
-  t.test('maxTextLength',async t => {
+  t.test('maxTextLength', async t => {
     const data = [
       {text:'test'},
       {text:'test'},
@@ -68,7 +68,7 @@ t.test('collect', {autoend: true, jobs: 10}, t => {
     ],'pushes when text reaches max');
   });
 
-  t.test('custom fn',async t => {
+  t.test('custom fn', async t => {
     const expected = [
       [1,2,3],
       [4,5,6],

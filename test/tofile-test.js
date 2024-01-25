@@ -5,7 +5,7 @@ const t = require('tap');
 
 const filename = path.join(os.tmpdir(),Number(new Date())+'.txt');
 
-t.test('toFile', {autoend:true}, t => {
+t.test('toFile', async t => {
   t.test('piping into', async t => {
     const d = await etl.toStream([1,2,[3,4]])
       .pipe(etl.stringify(0,null,true))

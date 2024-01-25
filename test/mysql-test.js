@@ -25,7 +25,7 @@ const before = async function() {
   );
 };
  
-t.test('mysql', {timeout: 20000, autoend:true}, async function(t) {
+t.test('mysql', {timeout: 20000}, async function(t) {
   await before();
 
   t.test('inserts', async function(t) {

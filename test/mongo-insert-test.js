@@ -8,7 +8,7 @@ t.test('mongo.insert', async t => {
 
   t.teardown(() => t.end());
   
-  t.test('piping data into mongo.insert',async t => {
+  t.test('piping data into mongo.insert', async t => {
     const collection = await getCollection('insert');
     const d = await data.stream()
                     .pipe(etl.mongo.insert(collection,{pushResult:true}))
@@ -17,14 +17,14 @@ t.test('mongo.insert', async t => {
     d.forEach(d => t.ok(d.acknowledged && d.insertedId,'inserts each record'));
   });
 
-  t.test('mongo collection',async t => {
+  t.test('mongo collection', async t => {
     const collection = await getCollection('insert');
     const d = await collection.find({},{ projection: {_id:0}}).toArray();
 
     t.same(d,data.data,'reveals data');
   });
 
-  t.test('pushResult == false and collection as promise',async t => {
+  t.test('pushResult == false and collection as promise', async t => {
     const collection = await getCollection('insert');
     const d = await data.stream(etl.mongo.insert(collection))
                 .pipe(etl.mongo.insert(collection))

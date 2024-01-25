@@ -2,7 +2,7 @@ const etl = require('../index');
 const Promise = require('bluebird');
 const t = require('tap');
 
-t.test('keepOpen', {autoend: true, jobs: 10}, t => {
+t.test('keepOpen', { jobs: 10 }, async t => {
   t.test('after end',async t => {
     const p = etl.keepOpen(500);
     const d = await etl.toStream([1,999,[3,4]])

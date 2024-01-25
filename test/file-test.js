@@ -3,7 +3,7 @@ const path = require('path');
 const data = require('./data');
 const t = require('tap');
 
-t.test('file', {autoend: true}, async t => {
+t.test('file', async t => {
   const file = await etl.file(path.join(__dirname,'test.txt')).promise();
     
   t.test('results', t => {

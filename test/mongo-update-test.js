@@ -4,14 +4,13 @@ const data = require('./data');
 const {getCollection, clear} = require('./lib/mongo');
 const t = require('tap');
 
-t.test('mongo update', { autoend: true }, t => {
-
+t.test('mongo update', async t => {
   t.teardown(() => t.end());
 
-  t.test('single record', { autoend: true }, async t => {
+  t.test('single record', async t => {
     const collection = await getCollection('update-empty');
 
-    t.test('missing keys',async t => {
+    t.test('missing keys', async t => {
       const e = await Promise.try(() => etl.mongo.update(collection))
         .then(() => { throw 'Should result in an error';},Object);
       t.same(e.message,'Missing Keys','Errors');
@@ -41,7 +40,7 @@ t.test('mongo update', { autoend: true }, t => {
     });
   });
 
-  t.test('bulk', {autoend:true}, async t => {
+  t.test('bulk', async t => {
     const collection = await getCollection('update-empty');
 
     t.test('on an empty collection', async t => {
@@ -154,7 +153,7 @@ t.test('mongo update', { autoend: true }, t => {
     });
   });
 
-  t.test('using $update with upsert function',{autoend: true}, async t => {
+  t.test('using $update with upsert function', async t => {
     const collection = await getCollection('upsert3');
     t.test('should populate', async t => {
       const upsert = etl.mongo.upsert(collection,['name'],{pushResult:true});
@@ -177,7 +176,7 @@ t.test('mongo update', { autoend: true }, t => {
     });
   });
 
-  t.test('error in collection',async t => {
+  t.test('error in collection', async t => {
     const collection = Promise.reject(new Error('CONNECTION_ERROR'));
     const e = await etl.toStream({test:true})
       .pipe(etl.mongo.update(collection,'_id'))

@@ -36,7 +36,7 @@ t.test('elastic', async t => {
 
   t.test('pipe into etl.elastic.index()',async t => {
     let i = 0;
-    const upsert = etl.elastic.index(client,'test','test',{pushResults:true});
+    const upsert = etl.elastic.index(client,'test',undefined,{pushResults:true});
 
     const d = await data.stream()
       .pipe(etl.map(d => {
@@ -84,7 +84,7 @@ t.test('elastic', async t => {
   });
 
   t.test('No retry on mapping exception', async t => {
-    const upsert = etl.elastic.index(client,'testretries','testretries',{maxRetries: 1, retryDelay:1, pushErrors: true});
+    const upsert = etl.elastic.index(client,'testretries',undefined,{maxRetries: 1, retryDelay:1, pushErrors: true});
     let results = upsert.pipe(etl.map()).promise();
     upsert.write({number:2});
     upsert.write({number: 'not a number'});

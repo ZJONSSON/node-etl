@@ -445,6 +445,8 @@ etl.elastic.scroll(esClient,{index: 'index.a', size: 5000})
 
 If `custom` action is selected, each packet must be the raw metadata to be sent to elasticsearch with the optional second line stored in property `body`
 
+Since `_type` is no longer allowed in elasticsearch > 7, it should be set as undefined for use in later versions.
+
 #### BigQuery
 
 <a name="bigquery" href="#bigquery">#</a> etl.bigquery.<b>insert</b>(<i>table</i>, [,<i>options</i>])

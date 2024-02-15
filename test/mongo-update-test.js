@@ -33,10 +33,7 @@ t.test('mongo update', async t => {
 
       const d = await data.pipe(insert).promise();
 
-      if (d[0].nModified === null && d[0].modifiedCount === null)
-        t.pass('WARNING - Mongo 2.6 or higher needed for nModfied');
-      else
-        t.same(d[0].modifiedCount,1);
+      t.same(d[0].modifiedCount,1);
     });
   });
 
@@ -87,12 +84,8 @@ t.test('mongo update', async t => {
           .promise();
                 
         d = d[0];
-        if (d.nModified === null && d.modifiedCount === null)
-          console.log('WARNING - Mongo 2.6 or higher needed for nModfied');
-        else {
-          t.same(d.modifiedCount,2,'modified 2 records');
-          t.same(d.insertedCount,0,'inserted zero records');
-        }
+        t.same(d.modifiedCount,2,'modified 2 records');
+        t.same(d.insertedCount,0,'inserted zero records');
       });
 
       t.test('using find', async t => {

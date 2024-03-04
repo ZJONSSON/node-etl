@@ -17,7 +17,7 @@ function convertHits(d) {
   .sort((a,b) => a.__line - b.__line);
 }
 
-t.test('elastic', {autoend:true}, async t => {
+t.test('elastic', async t => {
   await client.indices.delete({index:'test'}).catch(Object);
   await client.indices.delete({index:'testretries'}).catch(Object);
 
@@ -36,7 +36,7 @@ t.test('elastic', {autoend:true}, async t => {
 
   t.test('pipe into etl.elastic.index()',async t => {
     let i = 0;
-    const upsert = etl.elastic.index(client,'test','test',{pushResult:true});
+    const upsert = etl.elastic.index(client,'test',undefined,{pushResults:true});
 
     const d = await data.stream()
       .pipe(etl.map(d => {
@@ -53,15 +53,15 @@ t.test('elastic', {autoend:true}, async t => {
 
   t.test('retreive data with client.search()', async t => {
     await Promise.delay(2000); 
-    let d = await client.search({index:'test',type:'test'});
+    let d = await client.search({index:'test'});
     if (d.body) d = d.body;
     const values = convertHits(d.hits.hits);
     t.same(values,data.data,'data matches');
   });
 
-  t.test('etl.elastic.find()',async t => {
+  t.test('etl.elastic.find()', async t => {
     const find = etl.elastic.find(client);
-    find.end({index:'test','type':'test'});
+    find.end({index:'test'});
 
     let d = await find.promise();  
     const values = convertHits(d);
@@ -69,8 +69,8 @@ t.test('elastic', {autoend:true}, async t => {
     t.same(values,data.data,'returns original data');
   });
 
-  t.test('etl.elastic.scroll()',async t => {
-    const scroll = etl.elastic.scroll(client,{index: 'test', type: 'test', size: 1},{ highWaterMark: 0 });
+  t.test('etl.elastic.scroll()', async t => {
+    const scroll = etl.elastic.scroll(client,{index: 'test', size: 1},{ highWaterMark: 0 });
     // setting highWaterMark to zero and size = 1 allows us to test for backpressure
     // a missing scroll_id would indicate that scrolling has finished pre-emptively
     const d = await scroll.pipe(etl.map(d => {
@@ -84,14 +84,14 @@ t.test('elastic', {autoend:true}, async t => {
   });
 
   t.test('No retry on mapping exception', async t => {
-    const upsert = etl.elastic.index(client,'testretries','testretries',{maxRetries: 1, retryDelay:1, pushErrors: true});
+    const upsert = etl.elastic.index(client,'testretries',undefined,{maxRetries: 1, retryDelay:1, pushErrors: true});
     let results = upsert.pipe(etl.map()).promise();
     upsert.write({number:2});
     upsert.write({number: 'not a number'});
     upsert.end();
 
     results = await results;
-    t.same(results[0][0].error.type, 'mapper_parsing_exception');
+    t.same(results[0][0].error.type, 'document_parsing_exception');
     t.end();
   });
 });

@@ -2,7 +2,7 @@ const Promise = require('bluebird');
 const etl = require('../index');
 const t = require('tap');
 
-t.test('timeout', {autoend:true, jobs: 10}, t => {
+t.test('timeout', { jobs: 10 }, async t => {
   t.test('with no delay', async t => {
     const timeout = etl.timeout(100);
     const d = await etl.toStream([1,2,3,4])

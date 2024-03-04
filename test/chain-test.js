@@ -11,7 +11,7 @@ const expected = [
   [10,11]
 ];
 
-t.test('chain', {autoend: true}, t => {
+t.test('chain', async t => {
 
   t.test('returning a stream', async t => {
     const d = await dataStream(data)
@@ -21,7 +21,7 @@ t.test('chain', {autoend: true}, t => {
     t.same(d,expected,'returning stream is piped down');
   });
 
-  t.test('using the second argument as outstream',async t => {
+  t.test('using the second argument as outstream', async t => {
     const d = await dataStream(data)
       .pipe(etl.chain((stream,out) =>
         stream.pipe(etl.collect(3)).pipe(out)
@@ -42,7 +42,7 @@ t.test('chain', {autoend: true}, t => {
     t.same(d,expected,'pipes down promise results');
   });
 
-  t.test('errors in subchain',async t => {
+  t.test('errors in subchain', async t => {
     const chain = etl.map();
     setTimeout( () => chain.end('test'));
 

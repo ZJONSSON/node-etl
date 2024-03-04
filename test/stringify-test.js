@@ -13,7 +13,7 @@ function dataStream() {
   return s;
 }
 
-t.test('stringify', {autoend:true, jobs: 10}, t => {
+t.test('stringify', { jobs: 10 }, async t => {
   t.test('etl.stringify()',async t => {
     const stringify = etl.stringify();
     const expected = [ '{"a":1,"b":"test1"}', '{"a":2,"b":"test2"}' ];

@@ -6,7 +6,7 @@ let client;
 async function getMongodbDriver() {
 
   if (!client) {
-    client = await mongodbClient.connect('mongodb://mongodb:27017/etl_tests', {"useNewUrlParser": true, "useUnifiedTopology": true});
+    client = await mongodbClient.connect('mongodb://mongodb:27017/etl_tests', {});
   }
 
   return client.db();

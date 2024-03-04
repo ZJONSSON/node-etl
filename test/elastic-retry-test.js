@@ -29,7 +29,7 @@ const backoffFailingClient = {
 };
 
 t.test('elastic bulk insert retry ',async t => {  
-  const upsert = etl.elastic.upsert(client,'test','test',{pushResult:true,maxRetries:1,retryDelay:10,concurrency:10});
+  const upsert = etl.elastic.upsert(client,'test','test',{pushResults:true,maxRetries:1,retryDelay:10,concurrency:10});
 
   await etl.toStream([1,2,3,4,5,6,7,8,9,10].map(function(d) { return {_id:d,num:d};}))
     .pipe(etl.collect(2))
@@ -69,7 +69,7 @@ t.test('elastic bulk insert retry single item',async t => {
     }
   };
 
-  const upsert = etl.elastic.upsert(singleFailureRetryClient,'test','test',{pushResult:true,maxRetries:1,retryDelay:10,concurrency:10});
+  const upsert = etl.elastic.upsert(singleFailureRetryClient,'test','test',{pushResults:true,maxRetries:1,retryDelay:10,concurrency:10});
 
   let data = await etl.toStream([1,2,3,4,5,6,7,8,9,10].map(function(d) { return {_id:d,num:d};}))
     .pipe(etl.collect(2))
@@ -86,7 +86,7 @@ t.test('elastic bulk insert retry single item',async t => {
 
 
 t.test('backoff retries', async t => {
-  const options = {pushResult:true,maxRetries:7, backoffDelay:10, maxBackoffDelay: 250};
+  const options = {pushResults:true,maxRetries:7, backoffDelay:10, maxBackoffDelay: 250};
   const upsert = etl.elastic.upsert(backoffFailingClient,'test','test', options);
   let err;
 
@@ -100,7 +100,7 @@ t.test('backoff retries', async t => {
 });
 
 t.test('backoff retries with variance', async t => {
-  const options = {pushResult:true,maxRetries:7, backoffDelay:10, backoffVariance: 0.1, maxBackoffDelay: 250};
+  const options = {pushResults:true,maxRetries:7, backoffDelay:10, backoffVariance: 0.1, maxBackoffDelay: 250};
   const upsert = etl.elastic.upsert(backoffFailingClient,'test','test', options);
   let err;
 

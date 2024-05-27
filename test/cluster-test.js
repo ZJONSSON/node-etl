@@ -10,5 +10,5 @@ cluster.setupMaster({
 
 t.test('cluster', async t => {
   const d = await etl.cluster.schedule([1,2,3,4,5],3);
-  t.equal(d,15,'should schedule tasks');
+  t.equal(d, 15, 'should schedule tasks');
 });

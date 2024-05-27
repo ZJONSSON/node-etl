@@ -285,7 +285,7 @@ mongocollection.find({})
 
 <a name="mongoinsert" href="#mongoinsert">#</a> etl.mongo.<b>insert</b>(<i>collection</i> [,<i>options</i>])
 
-Inserts incoming data into the provided mongodb collection.  The supplied collection can be a promise on a collection.  The options are passed on to both streamz and the mongodb insert comand.  By default this object doesn't push anything downstream, but it `pushResults` is set as `true` in options, the results from mongo will be pushed downstream.
+Inserts incoming data into the provided mongodb collection.  The supplied collection can be a promise on a collection.  The options are passed on to both streamz and the mongodb insert comand.  By default this object doesn't push anything downstream, but if `pushResults` is set as `true` in options, the results from mongo will be pushed downstream.
 
 Example
 
@@ -444,6 +444,8 @@ etl.elastic.scroll(esClient,{index: 'index.a', size: 5000})
 ```
 
 If `custom` action is selected, each packet must be the raw metadata to be sent to elasticsearch with the optional second line stored in property `body`
+
+Since `_type` is no longer allowed in elasticsearch > 7, it should be set as undefined for use in later versions.
 
 #### BigQuery
 

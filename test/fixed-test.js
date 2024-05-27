@@ -2,7 +2,7 @@ const etl = require('../index');
 const data = require('./data');
 const t = require('tap');
 
-t.test('fixed layout',{autoend: true, jobs: 10}, t => {
+t.test('fixed layout', {jobs: 10}, async t => {
   t.test('defined as object', async t => {
     const d = await data.stream()
       .pipe(etl.map(d => ({text: d.text, __filename: d.__filename})))

@@ -5,7 +5,7 @@ const t = require('tap');
 const dataStream = require('./lib/dataStream');
 const data = [1,2,3,4,5,6,7,8,9,10,11];
 
-t.test('prescan', {autoend: true, jobs: 10}, t => {
+t.test('prescan', { jobs: 10 }, async t => {
 
   t.test('etl.prescan(3) with stream of objects',async t => {
     let prescanned,firstRecord;

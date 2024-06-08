@@ -1,16 +1,12 @@
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
-[![Test Coverage][circle-image]][circle-url]
-[![Coverage][coverage-image]][coverage-url]
+[![code coverage](https://zjonsson.github.io/node-etl/badge.svg)](https://zjonsson.github.io/node-etl/) 
+
 
 [npm-image]: https://img.shields.io/npm/v/etl.svg
 [npm-url]: https://npmjs.org/package/etl
-[circle-image]: https://circleci.com/gh/ZJONSSON/node-etl.png?style=shield
-[circle-url]: https://circleci.com/gh/ZJONSSON/node-etl/tree/master
 [downloads-image]: https://img.shields.io/npm/dm/etl.svg
 [downloads-url]: https://npmjs.org/package/etl
-[coverage-image]: https://3tjjj5abqi.execute-api.us-east-1.amazonaws.com/prod/node-etl/badge
-[coverage-url]: https://3tjjj5abqi.execute-api.us-east-1.amazonaws.com/prod/node-etl/url
 
 ETL is a collection of stream based components that can be piped together to form a complete ETL pipeline with buffering, bulk-inserts and concurrent database streams. See the `test` directory for live examples.
 
@@ -285,7 +281,7 @@ mongocollection.find({})
 
 <a name="mongoinsert" href="#mongoinsert">#</a> etl.mongo.<b>insert</b>(<i>collection</i> [,<i>options</i>])
 
-Inserts incoming data into the provided mongodb collection.  The supplied collection can be a promise on a collection.  The options are passed on to both streamz and the mongodb insert comand.  By default this object doesn't push anything downstream, but it `pushResults` is set as `true` in options, the results from mongo will be pushed downstream.
+Inserts incoming data into the provided mongodb collection.  The supplied collection can be a promise on a collection.  The options are passed on to both streamz and the mongodb insert comand.  By default this object doesn't push anything downstream, but if `pushResults` is set as `true` in options, the results from mongo will be pushed downstream.
 
 Example
 
@@ -444,6 +440,8 @@ etl.elastic.scroll(esClient,{index: 'index.a', size: 5000})
 ```
 
 If `custom` action is selected, each packet must be the raw metadata to be sent to elasticsearch with the optional second line stored in property `body`
+
+Since `_type` is no longer allowed in elasticsearch > 7, it should be set as undefined for use in later versions.
 
 #### BigQuery
 

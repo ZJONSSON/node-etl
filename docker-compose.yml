@@ -1,4 +1,4 @@
-version: "3"
+version: "4"
 
 # IMPORTANT
 # Make sure you run setup-docker.sh before executing this!!!
@@ -29,40 +29,30 @@ services:
       - "9229:9229"
     expose:
       - 9229
-    networks:
-      etl-network:
-        ipv4_address: 173.23.0.100
 
   mongodb:
-    image: 'mongo:3.4-xenial'
-    networks:
-      - etl-network
+    image: 'mongo:7'
 
   mysql:
-    image: mysql
-    command: --default-authentication-plugin=mysql_native_password
+    image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: example
-    networks:
-      - etl-network
+      - MYSQL_ROOT_PASSWORD=example
+      
+    command: ["mysqld", "--default-authentication-plugin=mysql_native_password", "--sql_mode="]
+    volumes:
+      - mysql-data:/var/lib/mysql
 
   postgres:
-    image: postgres
+    image: postgres:16
     restart: always
     environment:
       POSTGRES_PASSWORD: example
-    networks:
-      - etl-network
 
   elasticsearch:
-    image: elasticsearch:6.4.1
-    environment: ['http.host=0.0.0.0', 'transport.host=127.0.0.1']
-    networks:
-      - etl-network
+    image: elasticsearch:8.12.0
+    environment: ['http.host=0.0.0.0', 'transport.host=127.0.0.1','xpack.security.enabled=false', 'xpack.security.enrollment.enabled=false']
 
-networks:
-  etl-network:
-    ipam:
-     config:
-       - subnet: 173.23.0.0/16
+
+volumes:
+  mysql-data:

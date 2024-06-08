@@ -1,7 +1,7 @@
 const etl = require('../index');
 const t = require('tap');
 
-t.test('toStream', {autoend:true, jobs: 10}, t => {
+t.test('toStream', { jobs: 10 }, async t => {
   t.test('static data',t => {
     t.test('array',async t => {
       const d = await etl.toStream([1,2,[3,4]]).pipe(etl.map(d => [d])).promise();

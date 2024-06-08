@@ -4,48 +4,44 @@ const data = require('./data');
 const {getCollection, clear} = require('./lib/mongo');
 const t = require('tap');
 
-t.test('mongo update', {autoend: true}, t => {
-
+t.test('mongo update', async t => {
   t.teardown(() => t.end());
 
-  t.test('single record', {autoend: true}, async t => {
+  t.test('single record', async t => {
     const collection = await getCollection('update-empty');
 
-    t.test('missing keys',async t => {
+    t.test('missing keys', async t => {
       const e = await Promise.try(() => etl.mongo.update(collection))
         .then(() => { throw 'Should result in an error';},Object);
       t.same(e.message,'Missing Keys','Errors');
     });
 
     t.test('upsert', async t => {
-      const insert = etl.mongo.update(collection,['__line'],{upsert: true, pushResult:true});
+      const insert = etl.mongo.update(collection,['__line'],{upsert: true, pushResults:true});
       const data = etl.map();
       data.end({name:'single record',__line:999});
 
       const d = await data.pipe(insert).promise();
 
-      t.same(d[0].nUpserted,1,'upserts one record');
+      t.same(d[0].upsertedCount,1,'upserts one record');
     });
 
     t.test('updates into mongo', async t => {
-      const insert = etl.mongo.update(collection,['__line'],{pushResult:true});
+      const insert = etl.mongo.update(collection,['__line'],{pushResults:true});
       const data = etl.map();
       data.end({name:'updated single record',__line:999});
 
       const d = await data.pipe(insert).promise();
 
-      if (d[0].nModified === null)
-        t.pass('WARNING - Mongo 2.6 or higher needed for nModfied');
-      else
-        t.same(d[0].nModified,1);
+      t.same(d[0].modifiedCount,1);
     });
   });
 
-  t.test('bulk', {autoend:true}, async t => {
+  t.test('bulk', async t => {
     const collection = await getCollection('update-empty');
 
     t.test('on an empty collection', async t => {
-      const update = etl.mongo.update(collection,['name'],{pushResult:true});
+      const update = etl.mongo.update(collection,['name'],{pushResults:true});
 
       let d = await data.stream()
               .pipe(etl.collect(100))
@@ -53,9 +49,9 @@ t.test('mongo update', {autoend: true}, t => {
               .promise();
           
       d = d[0];
-      t.same(d.nInserted,0,'inserts no records');
-      t.same(d.nUpserted,0,'upserts no records');
-      t.same(d.nMatched,0,'matched no records');
+      t.same(d.insertedCount,0,'inserts no records');
+      t.same(d.upsertedCount,0,'upserts no records');
+      t.same(d.matchedCount,0,'matched no records');
     });
 
     t.test('with pushresults == false',async t => {
@@ -74,7 +70,7 @@ t.test('mongo update', {autoend: true}, t => {
 
       t.test('update', async t => {
         await collection.insertMany(data.copy());
-        const update = etl.mongo.update(collection,['name'],{pushResult:true});
+        const update = etl.mongo.update(collection,['name'],{pushResults:true});
 
         let d = await data.stream()
           .pipe(etl.map(function(d) {
@@ -88,12 +84,8 @@ t.test('mongo update', {autoend: true}, t => {
           .promise();
                 
         d = d[0];
-        if (d.nModified === null)
-          console.log('WARNING - Mongo 2.6 or higher needed for nModfied');
-        else {
-          t.same(d.nModified,2,'modified 2 records');
-          t.same(d.nInserted,0,'inserted zero records');
-        }
+        t.same(d.modifiedCount,2,'modified 2 records');
+        t.same(d.insertedCount,0,'inserted zero records');
       });
 
       t.test('using find', async t => {
@@ -112,15 +104,15 @@ t.test('mongo update', {autoend: true}, t => {
       const collection = await getCollection('upsert');
 
       t.test('upsert', async t => {  
-        const upsert = etl.mongo.update(collection,['name'],{pushResult:true,upsert:true});
+        const upsert = etl.mongo.update(collection,['name'],{pushResults:true,upsert:true});
         let d = await data.stream()
           .pipe(etl.collect(100))
           .pipe(upsert)
           .promise();
 
         d = d[0];
-        t.same(d.nUpserted,3,'3 updated');
-        t.same(d.nMatched,0, '0 matched');
+        t.same(d.upsertedCount,3,'3 updated');
+        t.same(d.matchedCount,0, '0 matched');
       });
 
       t.test('find',async t => {
@@ -135,7 +127,7 @@ t.test('mongo update', {autoend: true}, t => {
       const collection = await getCollection('upsert2');
 
       t.test('should populate', async t => {
-        const upsert = etl.mongo.upsert(collection,['name'],{pushResult:true});
+        const upsert = etl.mongo.upsert(collection,['name'],{pushResults:true});
 
         let d = await data.stream()
           .pipe(etl.collect(100))
@@ -143,8 +135,8 @@ t.test('mongo update', {autoend: true}, t => {
           .promise();
 
         d = d[0];
-        t.same(d.nUpserted,3,'upserts 3 records');
-        t.same(d.nMatched,0,'matches 0 records');
+        t.same(d.upsertedCount,3,'upserts 3 records');
+        t.same(d.matchedCount,0,'matches 0 records');
       });
 
       t.test('find',async t =>  {
@@ -154,10 +146,10 @@ t.test('mongo update', {autoend: true}, t => {
     });
   });
 
-  t.test('using $update with upsert function',{autoend: true}, async t => {
+  t.test('using $update with upsert function', async t => {
     const collection = await getCollection('upsert3');
     t.test('should populate', async t => {
-      const upsert = etl.mongo.upsert(collection,['name'],{pushResult:true});
+      const upsert = etl.mongo.upsert(collection,['name'],{pushResults:true});
 
       let d = await data.stream()
         .pipe(etl.map(d => Object.assign( {name: d.name, $update:{$set: d}})))
@@ -166,8 +158,8 @@ t.test('mongo update', {autoend: true}, t => {
         .promise();
 
       d = d[0];
-      t.same(d.nUpserted,3,'upserts 3 records');
-      t.same(d.nMatched,0,'matches 0 records');
+      t.same(d.upsertedCount,3,'upserts 3 records');
+      t.same(d.matchedCount,0,'matches 0 records');
       t.end();
     });
 
@@ -177,7 +169,7 @@ t.test('mongo update', {autoend: true}, t => {
     });
   });
 
-  t.test('error in collection',async t => {
+  t.test('error in collection', async t => {
     const collection = Promise.reject(new Error('CONNECTION_ERROR'));
     const e = await etl.toStream({test:true})
       .pipe(etl.mongo.update(collection,'_id'))

@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "~3.5.0",
-    "csv-parser": "~1.8.0",
+    "csv-parser": "~1.12.1",
     "duplexer3": "^0.1.4",
     "moment": "~2.29.4",
     "streamz": "~1.8.10"
